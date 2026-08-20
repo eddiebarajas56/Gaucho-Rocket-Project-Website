@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.title }} | Gaucho Rocket Project</title>
+  <meta name="description" content="{{ site.description }}">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="{{ page.title }} | Gaucho Rocket Project">
+  <meta property="og:description" content="{{ site.description }}">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ site.url }}{{ page.url }}">
+
+  <link rel="icon" href="{{ '/assets/img/favicon.png' | relative_url }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+</head>
+<body>
+  {% include header.html %}
+  <main>
+    {{ content }}
+  </main>
+  {% include footer.html %}
+  <script>
+    window.addEventListener('scroll', function () {
+      document.querySelector('header').classList.toggle('scrolled', window.scrollY > 40);
+    });
+    var toggleBtn = document.querySelector('.menu-toggle');
+    var navList = document.querySelector('nav ul');
+    if (toggleBtn && navList) {
+      toggleBtn.addEventListener('click', function () {
+        navList.classList.toggle('open');
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+---
+layout: default
+title: Home
+---
+
+<section class="hero-fullscreen" style="background-image: url('{{ "/assets/img/hero-beach-launch.jpg" | relative_url }}');">
+  <div class="hero-overlay">
+    <h1 class="hero-title">GAUCHO ROCKET PROJECT</h1>
+    <p class="hero-subtitle">UC Santa Barbara — Student-Built Rockets, Reaching Higher.</p>
+    <a href="{{ '/about' | relative_url }}" class="hero-btn">Learn More</a>
+  </div>
+  <div class="scroll-indicator">
+    <span>Scroll</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<section class="page-content">
+  <h2>What We Do</h2>
+  <p>
+    The Gaucho Rocket Project is UC Santa Barbara's student-run rocketry team, designing,
+    building, and launching liquid bipropellant rockets in pursuit of engineering excellence
+    and hands-on aerospace experience.
+  </p>
+
+  <h2>Our Projects</h2>
+  <div class="project-preview-grid">
+    <a href="{{ '/projects/halo' | relative_url }}" class="project-card">
+      <h3>Halo</h3>
+      <p>Our VTVL (vertical takeoff, vertical landing) vehicle.</p>
+    </a>
+    <a href="{{ '/projects/jayis' | relative_url }}" class="project-card">
+      <h3>Jayis</h3>
+      <p>High-power rocket targeting 50,000+ ft.</p>
+    </a>
+    <a href="{{ '/projects/sonus' | relative_url }}" class="project-card">
+      <h3>Sonus</h3>
+      <p>[Short teaser description of Sonus]</p>
+    </a>
+  </div>
+</section>

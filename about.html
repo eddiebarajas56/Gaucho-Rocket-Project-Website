@@ -1,0 +1,42 @@
+---
+layout: default
+title: About Us
+---
+
+<section class="page-hero">
+  <h1>About Us</h1>
+  <p class="subtitle">Who we are, and why we build rockets.</p>
+</section>
+
+<section class="page-content">
+  <h2>Our Mission</h2>
+  <p>
+    [Write your mission statement here — e.g. "To provide UCSB students hands-on experience in
+    aerospace engineering through the design, construction, and launch of liquid bipropellant
+    and high-power rockets."]
+  </p>
+
+  <h2>Our History</h2>
+  <p>
+    [A few sentences about when the team started, major milestones, notable launches, etc.]
+  </p>
+
+  <img src="{{ '/assets/img/spacex-visit.jpg' | relative_url }}" alt="Team visiting SpaceX HQ" class="inline-photo">
+
+  <h2>Latest Updates</h2>
+  <div class="post-list">
+    {% for post in site.posts %}
+      <div class="post-preview">
+        <h3>{{ post.title }}</h3>
+        <p class="post-date">{{ post.date | date: "%B %d, %Y" }}</p>
+        <p>{{ post.excerpt }}</p>
+      </div>
+    {% endfor %}
+  </div>
+
+  <h2>Join Our Newsletter</h2>
+  <p>
+    Want updates on launches and events? Email us at
+    <a href="mailto:gauchorocketproject@ucsb.edu">gauchorocketproject@ucsb.edu</a> to be added to our mailing list.
+  </p>
+</section>

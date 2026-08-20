@@ -1,0 +1,21 @@
+<header>
+  <div class="nav-container">
+    <a href="{{ '/' | relative_url }}" class="logo">GAUCHO ROCKET PROJECT</a>
+    <button class="menu-toggle" aria-label="Menu">☰</button>
+    <nav>
+      <ul>
+        <li><a href="{{ '/' | relative_url }}">Home</a></li>
+        <li><a href="{{ '/about' | relative_url }}">About</a></li>
+        <li class="dropdown">
+          <a href="#">Projects ▾</a>
+          <ul class="dropdown-menu">
+            <li><a href="{{ '/projects/halo' | relative_url }}">Halo</a></li>
+            <li><a href="{{ '/projects/jayis' | relative_url }}">Jayis</a></li>
+            <li><a href="{{ '/projects/sonus' | relative_url }}">Sonus</a></li>
+          </ul>
+        </li>
+        <li><a href="{{ '/contact' | relative_url }}" class="nav-cta">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
