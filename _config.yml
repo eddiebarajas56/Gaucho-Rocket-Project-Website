@@ -1,7 +1,0 @@
-title: Gaucho Rocket Project
-description: UC Santa Barbara's Student Rocketry Team
-url: "https://ucsbrocketry.space"
-markdown: kramdown
-collections:
-  posts:
-    output: true
