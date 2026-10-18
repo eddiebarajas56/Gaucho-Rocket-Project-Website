@@ -200,33 +200,33 @@
     background: linear-gradient(0deg, rgba(10,26,43,.8), rgba(10,26,43,0));
   }
 
-  /* s */
-  .s { background: var(--night); color: #fff; }
-  .s .section-title { color: #fff; }
-  .-grid {
+  /* Videos */
+  .videos { background: var(--night); color: #fff; }
+  .videos .section-title { color: #fff; }
+  .video-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
   }
-  . h3 { font-size: 1.15rem; font-weight: 700; margin-top: .9rem; letter-spacing: -.01em; }
-  . p { margin: .25rem 0 0; color: #b7c3ce; font-size: 1rem; line-height: 1.5; }
-  .__frame {
+  .video h3 { font-size: 1.15rem; font-weight: 700; margin-top: .9rem; letter-spacing: -.01em; }
+  .video p { margin: .25rem 0 0; color: #b7c3ce; font-size: 1rem; line-height: 1.5; }
+  .video__frame {
     position: relative;
     aspect-ratio: 16 / 9;
     background: linear-gradient(135deg, #16385a, #0f2740);
     overflow: hidden;
   }
-  .__frame button, .__frame iframe {
+  .video__frame button, .video__frame iframe {
     position: absolute; inset: 0;
     width: 100%; height: 100%;
     border: 0; padding: 0;
   }
-  .__frame button {
+  .video__frame button {
     cursor: pointer;
     background: transparent center / cover no-repeat;
     color: #fff;
   }
-  .__play {
+  .video__play {
     position: absolute; left: 50%; top: 50%;
     width: 64px; height: 64px;
     transform: translate(-50%, -50%);
@@ -234,14 +234,14 @@
     background: var(--gold);
     transition: transform 160ms ease;
   }
-  .__play::after {
+  .video__play::after {
     content: "";
     position: absolute; left: 26px; top: 20px;
     border-left: 20px solid var(--night);
     border-top: 12px solid transparent;
     border-bottom: 12px solid transparent;
   }
-  .__frame button:hover .__play { transform: translate(-50%, -50%) scale(1.08); }
+  .video__frame button:hover .video__play { transform: translate(-50%, -50%) scale(1.08); }
 
   /* Footer */
   footer { background: var(--paper); border-top: 6px solid var(--gold); padding: clamp(3rem, 6vw, 5rem) 0 2rem; }
@@ -280,7 +280,7 @@
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     .hero h1, .hero p { animation: none; }
-    .__play { transition: none; }
+    .video__play { transition: none; }
   }
 </style>
 </head>
