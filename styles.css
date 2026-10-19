@@ -57,7 +57,7 @@ section{padding:clamp(3.5rem,8vw,6.5rem) 0}
 /* Footer */
 footer{background:var(--paper);border-top:6px solid var(--gold);padding:clamp(3rem,6vw,5rem) 0 2rem}
 .footer__grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem}
-.footer__brand strong{font-family:var(--display);font-stretch:112%;font-size:1.35rem;font-weight:800;letter-spacing:-.02em}
+.footer__brand{display:flex;flex-direction:column} .footer__brand strong,.footer__brand p{font-family:"Sofachrome",var(--display);font-stretch:normal;font-weight:400;letter-spacing:0} .footer__brand strong{font-size:1.75rem}
 .footer__brand p{margin:.5rem 0 0;max-width:30ch;color:var(--muted);font-size:1rem;line-height:1.5}
 footer h3{font-size:1rem;font-stretch:100%;font-weight:700;letter-spacing:0;margin-bottom:.75rem}
 footer ul{list-style:none;margin:0;padding:0;font-size:1.02rem}footer li+li{margin-top:.4rem}
