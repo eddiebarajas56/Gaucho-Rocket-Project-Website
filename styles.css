@@ -14,6 +14,7 @@ h1,h2,h3{font-family:var(--display);font-stretch:112%;line-height:1.02;letter-sp
 .page-hero>*:not(.page-hero__img){position:relative;z-index:1}
 .nav{display:flex;justify-content:space-between;align-items:center;padding:1.5rem clamp(1.5rem,4vw,3rem);font-family:var(--display);font-weight:600;font-size:.95rem}
 .nav__brand{text-decoration:none;letter-spacing:-.01em}
+.nav__logo {height: 2rem;   /* change this to resize */width: auto;}
 .nav ul{display:flex;gap:1.75rem;list-style:none;margin:0;padding:0}
 .nav a{text-decoration:none}.nav ul a:hover{color:var(--gold)}
 .nav a[aria-current="page"]{border-bottom:2px solid var(--gold);padding-bottom:2px}
