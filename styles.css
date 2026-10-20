@@ -42,7 +42,7 @@ section{padding:clamp(3.5rem,8vw,6.5rem) 0}
 .mosaic figure:nth-child(n+2){grid-column:span 2}
 .mosaic figcaption{position:absolute;left:0;right:0;bottom:0;padding:1.5rem .9rem .7rem;color:#fff;font-family:var(--display);font-size:.85rem;font-weight:500;background:linear-gradient(0deg,rgba(10,26,43,.8),rgba(10,26,43,0))}
 /* Members */
-.people{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.5rem}
+.people{display:grid;grid-template-columns:repeat(5,1fr);gap:1.5rem}
 .person img,.person .ph{width:100%;aspect-ratio:4/5;object-fit:cover;background:linear-gradient(135deg,#16385a,#0a1a2b)}
 .person h3{font-size:1.15rem;font-weight:700;margin-top:.8rem;letter-spacing:-.01em}
 .person p{margin:.15rem 0 0;color:var(--muted);font-size:1rem;line-height:1.4}
