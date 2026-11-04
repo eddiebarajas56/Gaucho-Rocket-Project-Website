@@ -8,11 +8,12 @@
 <main><section><div class="wrap split"><h2 class="section-title">Who we are</h2><div class="text"><p>We are a student team at UC Santa Barbara that designs, builds, and launches rockets. Everything we fly, from the airframe to the avionics, is made by students.</p><p>Replace this text with your club's story and what you are building right now.</p></div></div></section>
 <!-- ========== WHERE WE GO (drop between #about and #photos) ========== -->
 <style>
-  .map { background: var(--night, #0a1a2b); color: #fff; }
-  .map__head { max-width: 60ch; margin-bottom: 2.5rem; }
+  .map { min-height: 100svh; display: flex; align-items: center; padding-block: 2rem; box-sizing: border-box; background: var(--night, #0a1a2b); color: #fff; }
+  .map .wrap { width: 100%; }
+  .map__head { max-width: 60ch; margin-bottom: 1rem; }
   .map__head .section-title { color: #fff; margin-bottom: 1rem; }
   .map__head p { margin: 0; color: #b7c3ce; }
-  .map__stage { position: relative; }
+  .map__stage { position: relative; max-width: min(100%, calc((100svh - 16rem) * 1.6)); margin-inline: auto; }
   .map__svg { width: 100%; height: auto; display: block; }
   .map__land { fill: var(--deep, #0f2740); }
   .map__borders { fill: none; stroke: rgba(255,255,255,.14); stroke-width: .8; stroke-linejoin: round; }
