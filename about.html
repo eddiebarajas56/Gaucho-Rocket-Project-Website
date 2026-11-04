@@ -187,6 +187,74 @@
     </ol>
   </div>
 </section>
+<style>
+  .timeline__list {
+  list-style: none;
+  margin: 3rem 0 0;
+  padding: 0;
+  position: relative;
+}
+.timeline__list::before {            /* the vertical line */
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0; left: 50%;
+  width: 2px;
+  background: rgba(20, 32, 44, .18);
+  transform: translateX(-50%);
+}
+
+.tl__item {
+  position: relative;
+  width: 50%;
+  box-sizing: border-box;
+  padding: 0 2.5rem 2.75rem 0;
+  text-align: right;
+}
+.tl__item:nth-child(even) {
+  margin-left: 50%;
+  padding: 0 0 2.75rem 2.5rem;
+  text-align: left;
+}
+.tl__item:last-child { padding-bottom: 0; }
+
+.tl__item::before {                  /* the gold dot */
+  content: "";
+  position: absolute;
+  top: .3rem; right: -8px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--gold, #febc11);
+  border: 3px solid var(--paper, #f7f6f2);
+  box-sizing: border-box;
+}
+.tl__item:nth-child(even)::before { right: auto; left: -8px; }
+
+.tl__date {
+  display: block;
+  margin-bottom: .35rem;
+  font-family: var(--display, "Archivo", sans-serif);
+  font-weight: 700;
+  font-size: .85rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted, #5b6875);
+}
+.tl__item h3 { margin: 0 0 .4rem; }
+.tl__item p  { margin: 0; }
+
+@media (max-width: 800px) {
+  .timeline__list::before { left: 7px; transform: none; }
+  .tl__item,
+  .tl__item:nth-child(even) {
+    width: 100%;
+    margin-left: 0;
+    padding: 0 0 2.25rem 2.5rem;
+    text-align: left;
+  }
+  .tl__item::before,
+  .tl__item:nth-child(even)::before { left: 0; right: auto; }
+}
+  </style>
 
 <section id="join"><div class="wrap split"><h2 class="section-title">Join the team</h2><div class="text"><p>No experience is needed. Bring curiosity and we will teach you the rest, whether you are into mechanical design, electronics, software, or running a team.</p><p>Add when and where you meet.</p></div></div></section>
 <section class="cta"><div class="wrap"><h2>Sponsor the team.</h2><p>Add a sentence on what sponsors support and how they are recognized.</p><a class="btn" href="mailto:you@ucsb.edu">Email us</a></div></section></main>  
