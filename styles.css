@@ -60,8 +60,7 @@ section{padding:clamp(3.5rem,8vw,6.5rem) 0}
 footer{background:var(--paper);border-top:6px solid var(--gold);padding:clamp(3rem,6vw,5rem) 0 2rem}
 .footer__grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem}
 .footer__brand{display:block}
-.footer__logo{display:block;width:clamp(10rem,18vw,14rem);height:auto}
-.footer__logo{margin-top:-1rem}
+.footer__logo {display: block; width: clamp(14rem, 26vw, 20rem); height: auto; margin-top: -2.5rem;}
 .footer__grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem;align-items:start}
 footer h3{font-size:1rem;font-stretch:100%;font-weight:700;letter-spacing:0;margin-bottom:.75rem}
 footer ul{list-style:none;margin:0;padding:0;font-size:1.02rem}footer li+li{margin-top:.4rem}
