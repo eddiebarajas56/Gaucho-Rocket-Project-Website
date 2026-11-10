@@ -19,6 +19,10 @@ h1,h2,h3{font-family:var(--display);font-stretch:112%;line-height:1.02;letter-sp
 .nav a{text-decoration:none}.nav ul a:hover{color:var(--gold)}
 .nav a[aria-current="page"]{border-bottom:2px solid var(--gold);padding-bottom:2px}
 .page-hero .page-hero__content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 1.5rem;pointer-events:none}
+/* Hero sized to its photo (Halo: 1908x689). Below 886px wide it holds 320px so the title fits; there the photo crops to the engine. */
+.page-hero--fit{height:auto;min-height:0;aspect-ratio:1908/689}
+@media(max-width:886px){.page-hero--fit{aspect-ratio:auto;height:320px}}
+.page-hero--fit .page-hero__img{object-position:62% center}
 .page-hero h1,.page-hero p{font-family:"Sofachrome",var(--display);font-weight:400;font-stretch:normal}
 .page-hero h1{font-size:clamp(2.5rem,8vw,7rem)}
 .page-hero p{margin:1.25rem auto 0;max-width:40ch;font-size:clamp(1.15rem,2vw,1.5rem);line-height:1.4}
