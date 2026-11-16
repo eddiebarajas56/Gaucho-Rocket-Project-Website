@@ -5,13 +5,329 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css"></head><body>
 <header class="page-hero page-hero--fit"><img class="page-hero__img" src="images/halo-main-photo.jpg" alt="" onerror="this.style.display='none'"><nav class="nav" aria-label="Main"><a class="nav__brand" href="index.html"><img class="nav__logo" src="images/logo1_vert_UCSB_white.png" alt="Gaucho Rocket Project"></a><ul><li><a href="about.html">About</a></li><li><a href="halo.html" aria-current="page">Halo</a></li><li><a href="stratis.html">Stratis</a></li><li><a href="sonus.html">Sonus</a></li><li><a href="members.html">Our Members</a></li></ul></nav><div class="page-hero__content"><h1>Halo</h1><p>Our vertical takeoff, vertical landing rocket.</p></div></header>
-<main><section><div class="wrap split"><h2 class="section-title">About Halo</h2><div class="text"><p>Halo is a liquid bipropellant rocket designed to take off vertically, fly, and land vertically under its own power. It is the team's top priority this year.</p><p>Replace this text with Halo's mission, what makes it hard, and where the build stands today.</p></div></div></section>
-<section class="alt"><div class="wrap"><h2 class="section-title">Specifications</h2><dl class="specs"><div><dt>Type</dt><dd>VTVL vehicle</dd></div><div><dt>Propulsion</dt><dd>Liquid bipropellant</dd></div><div><dt>Apogee</dt><dd>Add value</dd></div><div><dt>Status</dt><dd>Add status</dd></div></dl></div></section>
-<section><div class="wrap"><h2 class="section-title">Photos</h2><div class="mosaic"><figure><img src="images/halo-1.jpg" alt="Halo on the test stand" loading="lazy" onerror="this.style.display='none'"><figcaption>Halo on the test stand</figcaption></figure><figure><img src="images/halo-2.jpg" alt="Engine hot fire" loading="lazy" onerror="this.style.display='none'"><figcaption>Engine hot fire</figcaption></figure><figure><img src="images/halo-3.jpg" alt="Avionics" loading="lazy" onerror="this.style.display='none'"><figcaption>Avionics</figcaption></figure><figure><img src="images/halo-4.jpg" alt="Assembly" loading="lazy" onerror="this.style.display='none'"><figcaption>Assembly</figcaption></figure></div></div></section>
+<main><section><div class="wrap split"><h2 class="section-title">About Halo</h2><div class="text"><p>Halo is our largest liquid bi-propellant rocket, designed to be a vertical take off, vertical landing (VTVL) demonstrator. Halo is the culmination of our propulsion and avionics design skill and is a representation of our best work.</p></div></div></section>
+<section class="alt"><div class="wrap"><h2 class="section-title">Specifications</h2>
+<!-- Specs: each button opens the panel right after it. To edit, change the text below; keep each button's aria-controls equal to its panel's id. -->
+<div class="spec-tree">
+  <!-- Type -->
+  <button class="spec-tree__tile" type="button" id="spec-type-tile" aria-expanded="false" aria-controls="spec-type"><span class="k">Type</span><span class="v">VTVL demonstrator</span><span class="chev" aria-hidden="true"></span></button>
+  <div class="spec-tree__panel" id="spec-type" role="region" aria-labelledby="spec-type-tile" hidden>
+    <div class="spec-tree__tree">
+      <div class="spec-tree__root"><div class="k">Type</div><div class="v">VTVL demonstrator</div><p>Takes off, hovers, and lands on its own engine.</p></div>
+      <ol class="spec-tree__branches" aria-label="Design decisions">
+        <li><span class="spec-num">01</span><div><h3>A 30 m hop, not a high-altitude flight</h3><p>The goal is controlled vertical flight and a powered landing, so the vehicle only needs to reach about 30 m.</p></div></li>
+        <li><span class="spec-num">02</span><div><h3>Reliability over raw performance</h3><p>A hop doesn&rsquo;t need launch-vehicle efficiency. It needs an engine that behaves the same way every time across a wide throttle range.</p></div></li>
+        <li><span class="spec-num">03</span><div><h3>Sized as a 100 kg class vehicle</h3><p>Thrust, tank size, and propellant load all follow from keeping a roughly 100 kg vehicle in the air for about 40 seconds.</p></div></li>
+      </ol>
+    </div>
+  </div>
+  <!-- Thrust -->
+  <button class="spec-tree__tile" type="button" id="spec-thrust-tile" aria-expanded="false" aria-controls="spec-thrust"><span class="k">Thrust</span><span class="v">2.5 kN</span><span class="chev" aria-hidden="true"></span></button>
+  <div class="spec-tree__panel" id="spec-thrust" role="region" aria-labelledby="spec-thrust-tile" hidden>
+    <div class="spec-tree__tree">
+      <div class="spec-tree__root"><div class="k">Thrust</div><div class="v">2.5 kN</div><p>Raised from 1.5 kN to give the landing more authority.</p></div>
+      <ol class="spec-tree__branches" aria-label="Design decisions">
+        <li><span class="spec-num">01</span><div><h3>Raised from 1.5 kN to 2.5 kN</h3><p>Initial sizing gave 1.5&times; thrust-to-weight. Trajectory and control analysis showed the descent needs more margin to arrest sink rate and correct for gusts.</p></div></li>
+        <li><span class="spec-num">02</span><div><h3>Headroom up to 3.0 kN</h3><p>The feed system is sized for 120% thrust so the controller has room above the hover point.</p></div></li>
+        <li><span class="spec-num">03</span><div><h3>Nozzle built for sea level</h3><p>An expansion ratio of 3.65 brings the exhaust out at about 0.95 bar, close to ambient, so the nozzle is efficient where Halo actually flies.</p></div></li>
+      </ol>
+    </div>
+  </div>
+  <!-- Propellants -->
+  <button class="spec-tree__tile" type="button" id="spec-propellants-tile" aria-expanded="false" aria-controls="spec-propellants"><span class="k">Propellants</span><span class="v">N<sub>2</sub>O / IPA</span><span class="chev" aria-hidden="true"></span></button>
+  <div class="spec-tree__panel" id="spec-propellants" role="region" aria-labelledby="spec-propellants-tile" hidden>
+    <div class="spec-tree__tree">
+      <div class="spec-tree__root"><div class="k">Propellants</div><div class="v">N<sub>2</sub>O / IPA</div><p>Nitrous oxide and isopropyl alcohol.</p></div>
+      <ol class="spec-tree__branches" aria-label="Design decisions">
+        <li><span class="spec-num">01</span><div><h3>Nitrous oxide as oxidizer</h3><p>Non-hypergolic, low toxicity, inexpensive, and storable at high pressure without cryogenics, which keeps handling practical for a student team.</p></div></li>
+        <li><span class="spec-num">02</span><div><h3>Isopropyl alcohol as fuel</h3><p>In small engines IPA burns 2&ndash;5% more efficiently than ethanol, offsetting most of ethanol&rsquo;s theoretical edge, and it meters more consistently through small orifices.</p></div></li>
+        <li><span class="spec-num">03</span><div><h3>Mixture ratio 2.1 at 330 psia</h3><p>Chosen with NASA CEA to balance efficiency against chamber heating: about 270 s theoretical vacuum specific impulse at 1957 K.</p></div></li>
+      </ol>
+    </div>
+    <div class="spec-tree__ruled"><p>Considered and ruled out</p><ul>
+      <li><b>Liquid oxygen</b><span>cryogenic handling and boil-off</span></li>
+      <li><b>Ethanol</b><span>lower combustion efficiency at small scale</span></li>
+    </ul></div>
+  </div>
+  <!-- Oxidizer state -->
+  <button class="spec-tree__tile" type="button" id="spec-oxidizer-state-tile" aria-expanded="false" aria-controls="spec-oxidizer-state"><span class="k">Oxidizer state</span><span class="v">0 &deg;C &middot; 1000 psia</span><span class="chev" aria-hidden="true"></span></button>
+  <div class="spec-tree__panel" id="spec-oxidizer-state" role="region" aria-labelledby="spec-oxidizer-state-tile" hidden>
+    <div class="spec-tree__tree">
+      <div class="spec-tree__root"><div class="k">Oxidizer state</div><div class="v">0 &deg;C &middot; 1000 psia</div><p>Chilled and supercharged so it stays a pure liquid.</p></div>
+      <ol class="spec-tree__branches" aria-label="Design decisions">
+        <li><span class="spec-num">01</span><div><h3>Supercharged well above saturation</h3><p>At 0 &deg;C nitrous sits at 523 psia. Pressurizing to 1000 psia adds 477 psi of margin, so it flows as a single-phase liquid and only flashes at the injector.</p></div></li>
+        <li><span class="spec-num">02</span><div><h3>Regulated nitrogen pressurant</h3><p>Nitrogen stored at 4500 psia is regulated down to hold the tank at 1000 psia, so thrust depends on throttle position alone and doesn&rsquo;t fade as the tank empties.</p></div></li>
+        <li><span class="spec-num">03</span><div><h3>Colder means denser</h3><p>Nitrous is about 9% denser at 0 &deg;C (930 vs. 852 kg/m&sup3;), stretching the burn from 40 s to 43.4 s from the same tank.</p></div></li>
+        <li><span class="spec-num">04</span><div><h3>Insulated to hold temperature</h3><p>One inch of insulation and white paint keep warming under 5 &deg;C on a 100 &deg;F desert day.</p></div></li>
+      </ol>
+    </div>
+    <div class="spec-tree__ruled"><p>Considered and ruled out</p><ul>
+      <li><b>Self-pressurized blowdown</b><span>two-phase flow, instability, and thrust that fades as the tank empties</span></li>
+    </ul></div>
+  </div>
+  <!-- Throttle -->
+  <button class="spec-tree__tile" type="button" id="spec-throttle-tile" aria-expanded="false" aria-controls="spec-throttle"><span class="k">Throttle</span><span class="v">Dual VACV</span><span class="chev" aria-hidden="true"></span></button>
+  <div class="spec-tree__panel" id="spec-throttle" role="region" aria-labelledby="spec-throttle-tile" hidden>
+    <div class="spec-tree__tree">
+      <div class="spec-tree__root"><div class="k">Throttle</div><div class="v">Dual VACV</div><p>A variable-area cavitating venturi on each propellant line.</p></div>
+      <ol class="spec-tree__branches" aria-label="Design decisions">
+        <li><span class="spec-num">01</span><div><h3>Isolated from the chamber</h3><p>While the venturi is cavitating, flow is set by upstream pressure and pintle stroke, not chamber pressure, so combustion oscillations can&rsquo;t feed back into the plumbing.</p></div></li>
+        <li><span class="spec-num">02</span><div><h3>Nearly linear response</h3><p>With a shallow pintle angle, mass flow tracks stroke almost linearly, giving the controller a simple, repeatable command-to-flow law.</p></div></li>
+        <li><span class="spec-num">03</span><div><h3>One valve per propellant</h3><p>Separate valves on the oxidizer and fuel lines allow independent mixture-ratio control, so the team can correct for anything off-nominal found in testing.</p></div></li>
+      </ol>
+    </div>
+    <div class="spec-tree__ruled"><p>Considered and ruled out</p><ul>
+      <li><b>Servo ball or butterfly valves</b><span>nonlinear, with stiction and hysteresis</span></li>
+      <li><b>Needle or globe valves</b><span>sensitive to debris and flashing</span></li>
+      <li><b>Feed-pressure throttling</b><span>couples into mixture ratio</span></li>
+      <li><b>PWM solenoids</b><span>can excite feed and chamber acoustics</span></li>
+      <li><b>Variable-area pintle injector</b><span>locks the mixture ratio</span></li>
+    </ul></div>
+  </div>
+  <!-- Injector -->
+  <button class="spec-tree__tile" type="button" id="spec-injector-tile" aria-expanded="false" aria-controls="spec-injector"><span class="k">Injector</span><span class="v">Pintle</span><span class="chev" aria-hidden="true"></span></button>
+  <div class="spec-tree__panel" id="spec-injector" role="region" aria-labelledby="spec-injector-tile" hidden>
+    <div class="spec-tree__tree">
+      <div class="spec-tree__root"><div class="k">Injector</div><div class="v">Pintle</div><p>A stable spray across the whole throttle range.</p></div>
+      <ol class="spec-tree__branches" aria-label="Design decisions">
+        <li><span class="spec-num">01</span><div><h3>Built for throttling</h3><p>A pintle&rsquo;s spray stays stable across a wide range of flow rates and doesn&rsquo;t rely on precisely aligned impinging jets.</p></div></li>
+        <li><span class="spec-num">02</span><div><h3>Nitrous inside, fuel outside</h3><p>N<sub>2</sub>O exits radially through 32 holes of 1.0 mm in a 14 mm pintle into a sheet of IPA. That puts the difficult two-phase flow where published test data applies.</p></div></li>
+        <li><span class="spec-num">03</span><div><h3>Three variants, then choose</h3><p>Three pintle geometries will be cold-flowed with real nitrous, and the one that best hits the target flow rates moves on to hot fire.</p></div></li>
+      </ol>
+    </div>
+    <div class="spec-tree__ruled"><p>Considered and ruled out</p><ul>
+      <li><b>Doublet or triplet impinging injectors</b><span>need precise jet alignment</span></li>
+    </ul></div>
+  </div>
+  <!-- Engine -->
+  <button class="spec-tree__tile" type="button" id="spec-engine-tile" aria-expanded="false" aria-controls="spec-engine"><span class="k">Engine</span><span class="v">Copper &rarr; regen</span><span class="chev" aria-hidden="true"></span></button>
+  <div class="spec-tree__panel" id="spec-engine" role="region" aria-labelledby="spec-engine-tile" hidden>
+    <div class="spec-tree__tree">
+      <div class="spec-tree__root"><div class="k">Engine</div><div class="v">Copper &rarr; regen</div><p>A heat-sink engine for testing, a regen engine for flight.</p></div>
+      <ol class="spec-tree__branches" aria-label="Design decisions">
+        <li><span class="spec-num">01</span><div><h3>Start with a copper heat-sink engine</h3><p>Copper pulls heat away from the throat quickly, and its inserts can be swapped between tests. It proves out the feed system and models before committing to expensive hardware.</p></div></li>
+        <li><span class="spec-num">02</span><div><h3>Regeneratively cooled for flight</h3><p>A 40-second burn is too long for a heat-sink engine, so the flight engine runs propellant through cooling channels in the chamber wall.</p></div></li>
+        <li><span class="spec-num">03</span><div><h3>3D-printed Inconel 718</h3><p>Walls are expected near 800 &deg;C, where creep begins. Inconel 718 resists it, additive manufacturing builds the channels into the wall, and spare IPA is carried for film cooling.</p></div></li>
+        <li><span class="spec-num">04</span><div><h3>Compact chamber</h3><p>78 mm chamber, 31.8 mm throat, and 288 mm long overall, with a characteristic length of 1.0 m.</p></div></li>
+      </ol>
+    </div>
+    <div class="spec-tree__ruled"><p>Considered and ruled out</p><ul>
+      <li><b>Heat-sink engine for flight</b><span>can&rsquo;t survive a 40 s burn</span></li>
+    </ul></div>
+  </div>
+  <!-- Ignition -->
+  <button class="spec-tree__tile" type="button" id="spec-ignition-tile" aria-expanded="false" aria-controls="spec-ignition"><span class="k">Ignition</span><span class="v">Torch igniter</span><span class="chev" aria-hidden="true"></span></button>
+  <div class="spec-tree__panel" id="spec-ignition" role="region" aria-labelledby="spec-ignition-tile" hidden>
+    <div class="spec-tree__tree">
+      <div class="spec-tree__root"><div class="k">Ignition</div><div class="v">Torch igniter</div><p>A gaseous hydrogen&ndash;oxygen flame lights the engine.</p></div>
+      <ol class="spec-tree__branches" aria-label="Design decisions">
+        <li><span class="spec-num">01</span><div><h3>A sustained flame, not a one-shot charge</h3><p>The torch keeps burning through startup, so a timing miss doesn&rsquo;t scrub the run. It&rsquo;s reusable and can be tuned between tests.</p></div></li>
+        <li><span class="spec-num">02</span><div><h3>Gaseous hydrogen and oxygen</h3><p>Both are already gases, so the igniter avoids conditioning cold liquid nitrous and atomizing alcohol inside a tiny chamber.</p></div></li>
+      </ol>
+    </div>
+    <div class="spec-tree__ruled"><p>Considered and ruled out</p><ul>
+      <li><b>APCP pucks</b><span>unreliable and made in-house</span></li>
+      <li><b>Black-powder cartridges</b><span>burn about 1 s, so timing is critical</span></li>
+    </ul></div>
+  </div>
+  <!-- Status -->
+  <button class="spec-tree__tile" type="button" id="spec-status-tile" aria-expanded="false" aria-controls="spec-status"><span class="k">Status</span><span class="v">Preliminary design</span><span class="chev" aria-hidden="true"></span></button>
+  <div class="spec-tree__panel" id="spec-status" role="region" aria-labelledby="spec-status-tile" hidden>
+    <div class="spec-tree__tree">
+      <div class="spec-tree__root"><div class="k">Status</div><div class="v">Preliminary design</div><p>Design review done, hardware testing next.</p></div>
+      <ol class="spec-tree__branches" aria-label="Milestones">
+        <li><span class="spec-num">01</span><div><h3>Preliminary Design Review</h3><p>The fluid system design is documented in the team&rsquo;s PDR, v1.1, October 2026.</p></div></li>
+        <li><span class="spec-num">02</span><div><h3>Next: bench-test the valves</h3><p>Valves are validated on the bench, then a regulator test station and the remote pressure regulator are built and tested.</p></div></li>
+        <li><span class="spec-num">03</span><div><h3>Then tanks, cold flow, and hot fire</h3><p>The IPA and N<sub>2</sub>O tanks are tested, nitrous ground support equipment is prepared, the injector is cold-flowed, and the copper engine is hot-fired.</p></div></li>
+      </ol>
+    </div>
+  </div>
+</div>
+</div></section>
+<section id="timeline"><div class="wrap"><h2 class="section-title">Timeline</h2></div>
+<div class="tlA tlA--wide" data-source="#halo-timeline-data" data-zoom-base="1120"></div>
+<!--
+  TIMELINE ENTRIES. Edit them here, or open halo-timeline-preview.html for a live editor (Copy HTML there, paste over this list).
+  data-date:  YYYY-MM-DD for an exact day, or YYYY-MM if you only know the month.
+  data-type:  design | test | flight | event
+  Sub-steps (optional): a nested <ol> of <li data-date="...">text</li>. Clicking the entry spawns
+  a dot for each one at its own date. They can fall before or after the main date.
+  Order doesn't matter; everything is sorted by date. Past/future is worked out from today's date automatically.
+-->
+<ol class="htl-data" id="halo-timeline-data">
+  <li data-date="2025-07" data-type="event"><h3>"Halo" Project Kickoff!</h3><p>Summer 2025
+Inspired by Gruyere's VTVL, optimists took to the challenge</p></li>
+  <li data-date="2025-09" data-type="design"><h3>First Design of N2O/IPA Engine</h3><p>1.25kN engine designed for short duration testing, requiring design of upstream system to support static testing</p></li>
+  <li data-date="2025-10-30" data-type="flight"><h3>Mojave Sphinx Launch</h3><p>In pursuit of more complex vehicles</p>
+    <ol>
+      <li data-date="2025-06">Parts ordered</li>
+      <li data-date="2025-08">Integration begins</li>
+      <li data-date="2025-09">Final integration, launch prep.</li>
+    </ol>
+  </li>
+  <li data-date="2025-11" data-type="design"><h3>Sights Set on Lander Challenge</h3><p>Vehicle redesigned for VTVL operation and 40 second burn with nominal thrust of 2.5kN and max thrust of 3kN at sea level</p></li>
+  <li data-date="2026-01" data-type="design"><h3>Feed System to Support 3kN</h3><p>Designed for 3kN, N2O/IPA, 3:1 throttling</p></li>
+  <li data-date="2026-01" data-type="event"><h3>Halo Jr. Inception</h3><p>Dual-rotor, single motor vehicle begins design</p></li>
+  <li data-date="2026-02" data-type="design"><h3>Halo Design Review</h3><p>3 hour presentation given outlining reasoning for all design choices thus far; feedback from launch and hardware experts</p></li>
+  <li data-date="2026-03" data-type="design"><h3>Halo v5</h3><p>CAD model including all propulsion systems and ground support systems, cold gas thrusters, TVC, and structures published</p></li>
+  <li data-date="2026-04" data-type="event"><h3>Workshop Acquired!</h3><p>Santa Barbara Hackerspace (SBHX) graciously rents GRP a shed for storage and work</p></li>
+  <li data-date="2026-05" data-type="event"><h3>Funding Delays...</h3><p>Construction halts due to lack of funding. high pressure infrastructure for cold flow tests inaccessible</p></li>
+  <li data-date="2026-06" data-type="event"><h3>URCA</h3><p>Five posters presented at URCA fair and later selected to be featured at the UCSB library!</p>
+    <ol>
+      <li data-date="2026-06">Propulsion displays valve assemblies, and throttle and injector concepts</li>
+      <li data-date="2026-06">Avionics displays simulated algorithms and Halo Junior design</li>
+    </ol>
+  </li>
+  <li data-date="2026-08" data-type="design"><h3>"Ortus", Halo Test Platform Inception</h3><p>Learn-by-doing: Ortus scale systems allow for rapid iteration at a significantly lower cost; experimental Halo designs tested</p>
+    <ol>
+      <li data-date="2026-06">Sensor Integration</li>
+      <li data-date="2026-09">Ortus Injector (v1)</li>
+      <li data-date="2026-11">Static Venturi Throttle Test</li>
+      <li data-date="2026-12">Supercharge</li>
+      <li data-date="2026-10">Hotfire Stand</li>
+      <li data-date="2027-01">TVC</li>
+      <li data-date="2027-02">Regenerative Cooled Engine</li>
+      <li data-date="2026-11">Ortus Injector (v2)</li>
+    </ol>
+  </li>
+  <li data-date="2026-10-03" data-type="test"><h3>Fall FAR 1: Scrubbed</h3><p>Scrubbed hotfire due to poor test stand design and preparation</p></li>
+  <li data-date="2026-10-17" data-type="test"><h3>Fall FAR 3: Cold Flow</h3><p>Hotfire turned cold flow due to poor launch ops</p></li>
+  <li data-date="2026-10-24" data-type="test"><h3>Fall FAR 6: 2x Static Fires!</h3><p>First successful hot fire!!!</p>
+    <ol>
+      <li data-date="2026-10-24">Hotfire of stock Mojave Sphinx</li>
+      <li data-date="2026-10-24">Hotfire of Ortus Injector (v1)</li>
+      <li data-date="2026-10-24">First data acquisition</li>
+    </ol>
+  </li>
+  <li data-date="2026-10-24" data-type="flight"><h3>Halo Jr. Maiden Flight!</h3><p>Halo Jr. flies for the first time; successfully maintains altitude!</p>
+    <ol>
+      <li data-date="2026-10-24">First flight and Hover</li>
+      <li data-date="2026-12">Controlled ascent to 5 ft, hover, and descent</li>
+      <li data-date="2027-01">Controlled flight with specifications given for hovering and landing locations.</li>
+    </ol>
+  </li>
+  <li data-date="2026-11-21" data-type="test"><h3>Fall FAR 8: Injector (v1), Engine Static</h3><p>Hotfire of Injector (v1), graphite throat, phenolic nozzles</p></li>
+  <li data-date="2026-12-04" data-type="event"><h3>Fall Quarter Ends</h3><p></p></li>
+  <li data-date="2026-12-05" data-type="test"><h3>Fall FAR 10: Injector (v2), Engine Static</h3><p>Hotfire of Injector (v2), Engine (v1)</p></li>
+  <li data-date="2026-12" data-type="design"><h3>Halo Avionics Distributed System</h3><p>Designs for all PCBs to be used and tested on halo jr. then scaled and edited for Halo.</p>
+    <ol>
+      <li data-date="2026-12">Motor board to be used in ignition/TVC</li>
+      <li data-date="2026-12">RTK integration with a ground station and satellite</li>
+      <li data-date="2027-01">Parts ordered to begin in house manufacturing of PCBs for Halo</li>
+    </ol>
+  </li>
+  <li data-date="2027-01-02" data-type="test"><h3>Winter FAR 0: Ortus TVC</h3><p>Ortus Supercharge and TVC static tests</p></li>
+  <li data-date="2027-01-16" data-type="test"><h3>Winter FAR 2: Short Duration 3kN Static</h3><p>Short duration static test of N2O/IPA, 3kN engine</p></li>
+  <li data-date="2027-01-16" data-type="test"><h3>FAR (??): Potential Winter Break Hotfire</h3><p></p></li>
+  <li data-date="2027-01-31" data-type="event"><h3>Liquid Symposium</h3><p>Presentation of "Throttling via Cavitation"</p></li>
+  <li data-date="2027-02-06" data-type="test"><h3>Winter FAR 5: Medium Duration 3kN Static</h3><p>Long duration static test of N2O/IPA, 3kN engine; regeneratively cooled, throttled</p></li>
+  <li data-date="2027-02-20" data-type="test"><h3>Winter FAR 7: Variable Duration 3kN Static</h3><p>Short and long duration static test of 3kN engine, thrust vectored</p></li>
+  <li data-date="2027-03-06" data-type="test"><h3>Winter FAR 9: Full 40s 3kN Static</h3><p>Simulated 40s flight profile static test</p></li>
+  <li data-date="2027-03-12" data-type="event"><h3>Winter Quarter Ends</h3><p></p></li>
+  <li data-date="2027-04-03" data-type="test"><h3>Spring FAR 1: Fully Integrated Static</h3><p></p></li>
+  <li data-date="2027-04-17" data-type="flight"><h3>Spring FAR 3: Tethered Hover</h3><p>Halo tethered hover</p></li>
+  <li data-date="2027-05-01" data-type="flight"><h3>Spring FAR 5: Halo Full Flight Attempt</h3><p>Halo flies!</p></li>
+  <li data-date="2027-06-04" data-type="event"><h3>Spring Quarter Ends</h3><p></p></li>
+</ol>
+</section>
+<!-- Propulsion diagrams. Source: diagrams/propulsion.drawio (open it in draw.io). The site's copies are made from it:
+     images/halo-propulsion.svg, images/ortus-propulsion.svg and the legend icons in images/propulsion-legend/.
+     diagram.js draws the chosen one (data-src) so it can be dragged and zoomed. -->
+<section class="fw" id="propulsion" data-diagram><div class="wrap">
+  <div class="fw__head">
+    <div class="fw__intro"><h2 class="section-title">Propulsion &amp; actuators</h2>
+      <p>Every tank, line, valve and sensor in the fluid system, including the valves our firmware drives. Explore Halo, or switch to Ortus, its smaller test platform.</p></div>
+    <div class="fw__switch" role="group" aria-label="Vehicle">
+      <button type="button" aria-pressed="true" aria-controls="fw-canvas" data-src="images/halo-propulsion.svg" data-label="Halo propulsion and actuator diagram">Halo</button>
+      <button type="button" aria-pressed="false" aria-controls="fw-canvas" data-src="images/ortus-propulsion.svg" data-label="Ortus propulsion and actuator diagram">Ortus</button>
+    </div>
+  </div>
+</div>
+<!-- Legend: shared by both diagrams. Wider than the text column so wide screens get more columns. Edit the wording here; the icons are drawn from the draw.io legend. -->
+<details class="fw__legend" open><summary>Legend</summary><div class="fw__lbody">
+  <div class="fw__lgroup"><h3>Lines</h3><ul>
+    <li><img src="images/propulsion-legend/hp.svg" alt=""><span>High-pressure gas, 4500 psi<small>1/4 in NPT · Halo</small></span></li>
+    <li><img src="images/propulsion-legend/press.svg" alt=""><span>Pressurant (N2) to tanks<small>Halo 1000–1500 psi, 1/4 in NPT · Ortus N2 line</small></span></li>
+    <li><img src="images/propulsion-legend/lp.svg" alt=""><span>Low-pressure gas, 100 psi<small>LP reservoir to RCS &amp; AABV, valve pneumatics · Halo</small></span></li>
+    <li><img src="images/propulsion-legend/gse.svg" alt=""><span>Propellant fill from GSE<small>1/2 in NPT · Halo</small></span></li>
+    <li><img src="images/propulsion-legend/ox.svg" alt=""><span>Oxidizer (N2O)<small>Halo: to engine, 3/4 in NPT · Ortus: N2O line</small></span></li>
+    <li><img src="images/propulsion-legend/fuel.svg" alt=""><span>Fuel<small>Halo: to engine, 1/2 in NPT · Ortus: fuel line</small></span></li>
+    <li><img src="images/propulsion-legend/tap.svg" alt=""><span>Vent, sensor tap &amp; signal<small>vent / sensor tap 1/8 in NPT, ignition and engine sensor connections</small></span></li>
+    <li><img src="images/propulsion-legend/lcline.svg" alt=""><span>Mechanical sensor connection<small>to a load cell · Ortus</small></span></li>
+    <li><img src="images/propulsion-legend/leader.svg" alt=""><span>Note leader line</span></li>
+    <li><img src="images/propulsion-legend/flow.svg" alt=""><span>Flow direction</span></li>
+  </ul></div>
+  <div class="fw__lgroup"><h3>Symbols</h3><ul>
+    <li><img src="images/propulsion-legend/servo.svg" alt=""><span>Servo-actuated ball valve</span></li>
+    <li><img src="images/propulsion-legend/air.svg" alt=""><span>Air-actuated ball valve<small>100 psi</small></span></li>
+    <li><img src="images/propulsion-legend/p.svg" alt=""><span>Pressure sensor</span></li>
+    <li><img src="images/propulsion-legend/t.svg" alt=""><span>Temperature sensor</span></li>
+    <li><img src="images/propulsion-legend/reg.svg" alt=""><span>Pressure regulator</span></li>
+    <li><img src="images/propulsion-legend/relief.svg" alt=""><span>Pressure relief valve (PRV)<small>proportional on Halo</small></span></li>
+    <li><img src="images/propulsion-legend/check.svg" alt=""><span>Check valve<small>arrow = flow</small></span></li>
+    <li><img src="images/propulsion-legend/hose.svg" alt=""><span>Flexible hose</span></li>
+    <li><img src="images/propulsion-legend/qd.svg" alt=""><span>Quick disconnect (QD)</span></li>
+    <li><img src="images/propulsion-legend/vent.svg" alt=""><span>Vent to atmosphere</span></li>
+    <li><img src="images/propulsion-legend/filter.svg" alt=""><span>Filter</span></li>
+    <li><img src="images/propulsion-legend/cross.svg" alt=""><span>Crossing, no connection</span></li>
+    <li><img src="images/propulsion-legend/tee.svg" alt=""><span>Junction (tee)</span></li>
+    <li><img src="images/propulsion-legend/lc.svg" alt=""><span>Load cell (LC)</span></li>
+    <li><img src="images/propulsion-legend/co.svg" alt=""><span>Orifice (CO)</span></li>
+    <li><img src="images/propulsion-legend/placeholder.svg" alt=""><span>Placeholder<small>source still to be defined</small></span></li>
+  </ul></div>
+  <p class="fw__lnote">Line weight shows nominal pipe size: 3/4 in = 8 px, 1/2 in = 5.3 px, 1/4 in = 2.7 px, 1/8 in = 1.3 px. Unspecified sizes are assumed 1/4 in for HP and pressurant lines and 1/8 in for pneumatic, vent and sensor taps. &ldquo;____&rdquo; marks a value still to be filled in.</p>
+</div></details>
+<div class="fw__canvas" id="fw-canvas" tabindex="0" role="region" aria-label="Halo propulsion and actuator diagram" aria-describedby="fw-hint">
+  <div class="fw__stage"><noscript><img src="images/halo-propulsion.svg" alt="Halo propulsion and actuator diagram"></noscript></div>
+  <p class="fw__hint" id="fw-hint"></p>
+  <div class="fw__controls">
+    <button type="button" data-zoom="in" aria-label="Zoom in"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg></button>
+    <button type="button" data-zoom="out" aria-label="Zoom out"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12"/></svg></button>
+    <button type="button" data-zoom="fit" aria-label="Show the whole diagram"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 8V3h5M12 3h5v5M17 12v5h-5M8 17H3v-5"/></svg></button>
+  </div>
+</div></section>
+<!-- Avionics diagram. Source: diagrams/avionics.drawio (open it in draw.io); images/halo-avionics.svg is made from it
+     (draw.io's dark rendering, recoloured to the site). diagram.js draws it so it can be dragged and zoomed. -->
+<section class="fw" id="avionics" data-diagram="images/halo-avionics.svg" data-label="Halo avionics architecture diagram"><div class="wrap">
+  <div class="fw__head">
+    <div class="fw__intro"><h2 class="section-title">Avionics architecture</h2>
+      <p>Halo&rsquo;s distributed avionics: every board with its microcontroller and sensors, the CAN bus that links them, and the power each one draws from the power distribution unit.</p></div>
+  </div>
+</div>
+<div class="fw__canvas" id="av-canvas" tabindex="0" role="region" aria-label="Halo avionics architecture diagram" aria-describedby="av-hint">
+  <div class="fw__stage"><noscript><img src="images/halo-avionics.svg" alt="Halo avionics architecture diagram"></noscript></div>
+  <p class="fw__hint" id="av-hint"></p>
+  <div class="fw__controls">
+    <button type="button" data-zoom="in" aria-label="Zoom in"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg></button>
+    <button type="button" data-zoom="out" aria-label="Zoom out"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12"/></svg></button>
+    <button type="button" data-zoom="fit" aria-label="Show the whole diagram"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 8V3h5M12 3h5v5M17 12v5h-5M8 17H3v-5"/></svg></button>
+  </div>
+</div></section>
+<section class="alt"><div class="wrap"><h2 class="section-title">Photos</h2><div class="mosaic"><figure><img src="images/halo-1.jpg" alt="Halo on the test stand" loading="lazy" onerror="this.style.display='none'"><figcaption>Halo on the test stand</figcaption></figure><figure><img src="images/halo-2.jpg" alt="Engine hot fire" loading="lazy" onerror="this.style.display='none'"><figcaption>Engine hot fire</figcaption></figure><figure><img src="images/halo-3.jpg" alt="Avionics" loading="lazy" onerror="this.style.display='none'"><figcaption>Avionics</figcaption></figure><figure><img src="images/halo-4.jpg" alt="Assembly" loading="lazy" onerror="this.style.display='none'"><figcaption>Assembly</figcaption></figure></div></div></section>
 <section class="cta"><div class="wrap"><h2>Help us build the next one.</h2><p>No experience needed. Come to a meeting and pick a subteam.</p><a class="btn" href="about.html#join">Join the team</a></div></section></main>
 <footer><div class="wrap"><div class="footer__grid"><div class="footer__brand"><strong>Gaucho Rocket Project</strong><p>Student rocketry at UC Santa Barbara.</p></div>
 <div><h3>Explore</h3><ul><li><a href="about.html">About</a></li><li><a href="members.html">Our Members</a></li></ul></div>
 <div><h3>Rockets</h3><ul><li><a href="halo.html">Halo</a></li><li><a href="stratis.html">Stratis</a></li><li><a href="sonus.html">Sonus</a></li></ul></div>
 <div><h3>Connect</h3><ul><li><a href="#">Instagram</a></li><li><a href="#">YouTube</a></li><li><a href="mailto:you@ucsb.edu">Email us</a></li></ul></div></div>
 <div class="footer__legal">&copy; <span id="year"></span> Gaucho Rocket Project, UC Santa Barbara</div></div></footer>
-<script>document.getElementById('year').textContent=new Date().getFullYear();</script></body></html>
+<script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+<script>
+/* Spec explorer: one panel open at a time; Escape closes it */
+document.querySelectorAll('.spec-tree').forEach(function (tree) {
+  var tiles = tree.querySelectorAll('.spec-tree__tile');
+  var panelOf = function (t) { return document.getElementById(t.getAttribute('aria-controls')); };
+  var closeAll = function () { tiles.forEach(function (t) { t.setAttribute('aria-expanded', 'false'); panelOf(t).hidden = true; }); };
+  tiles.forEach(function (t) {
+    t.addEventListener('click', function () {
+      var wasOpen = t.getAttribute('aria-expanded') === 'true';
+      closeAll();
+      if (!wasOpen) { t.setAttribute('aria-expanded', 'true'); panelOf(t).hidden = false; }
+    });
+  });
+  tree.addEventListener('keydown', function (e) {
+    var open = tree.querySelector('.spec-tree__tile[aria-expanded="true"]');
+    if (e.key === 'Escape' && open) { closeAll(); open.focus(); }
+  });
+});
+</script><script src="timeline.js"></script><script src="diagram.js"></script>
+</body></html>
