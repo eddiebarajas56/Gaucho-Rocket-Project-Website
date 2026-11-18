@@ -4,7 +4,30 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css"></head><body>
-<header class="page-hero"><img class="page-hero__img" src="images/about-hero.jpg" alt="" onerror="this.style.display='none'"><nav class="nav" aria-label="Main"><a class="nav__brand" href="index.html"><img class="nav__logo" src="images/logo1_vert_UCSB_white.png" alt="Gaucho Rocket Project"></a><ul><li><a href="about.html" aria-current="page">About</a></li><li><a href="halo.html">Halo</a></li><li><a href="stratis.html">Stratis</a></li><li><a href="sonus.html">Sonus</a></li><li><a href="members.html">Our Members</a></li></ul></nav><div class="page-hero__content"><h1>About</h1><p>Student-built Rockets at UC Santa Barbara</p></div></header>
+
+<header class="page-hero">
+  <img class="page-hero__img" src="images/about-hero.jpg" alt="" onerror="this.style.display='none'">
+
+  <nav class="nav" aria-label="Main">
+    <a class="nav__brand" href="index.html"><img class="nav__logo" src="images/Rocket.png" alt="Gaucho Rocket Project"></a>
+    <ul>
+      <li><a href="about.html" aria-current="page">About</a></li>
+      <li><a href="halo.html">Halo</a></li>
+      <li><a href="stratis.html">Stratis</a></li>
+      <li><a href="sonus.html">Sonus</a></li>
+      <li><a href="members.html">Our Members</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-hero__content">
+    <h1>About</h1>
+    <p>Student-built Rockets at UC Santa Barbara</p>
+  </div>
+
+  <a class="page-hero__scroll" href="#who" aria-label="Scroll to content"><span></span></a>
+</header>
+
+  
 <main><section><div class="wrap split"><h2 class="section-title">Who we are</h2><div class="text"><p>We are a student team at UC Santa Barbara that designs, builds, and launches rockets. Everything we fly, from the airframe to the avionics, is made by students.</p><p>Replace this text with your club's story and what you are building right now.</p></div></div></section>
 <!-- ========== WHERE WE GO (drop between #about and #photos) ========== -->
 <style>
@@ -158,8 +181,6 @@
     document.addEventListener('click', hide);
   })();
 </script>
-<section class="alt"><div class="wrap split"><h2 class="section-title">Our rockets</h2><div class="text"><p><a href="halo.html"><strong>Halo</strong></a> is our liquid bipropellant vertical takeoff, vertical landing vehicle.</p><p><a href="stratis.html"><strong>Stratis</strong></a> and <a href="sonus.html"><strong>Sonus</strong></a> fly at our launch weekends. Add one sentence about each.</p></div></div></section>
-
 <section class="timeline" id="timeline">
   <div class="wrap">
     <h2 class="section-title">Our timeline</h2>
@@ -256,11 +277,182 @@
 }
   </style>
 
-<section id="join"><div class="wrap split"><h2 class="section-title">Join the team</h2><div class="text"><p>No experience is needed. Bring curiosity and we will teach you the rest, whether you are into mechanical design, electronics, software, or running a team.</p><p>Add when and where you meet.</p></div></div></section>
-<section class="cta"><div class="wrap"><h2>Sponsor the team.</h2><p>Add a sentence on what sponsors support and how they are recognized.</p><a class="btn" href="mailto:you@ucsb.edu">Email us</a></div></section></main>  
-<footer><div class="wrap"><div class="footer__grid"><div class="footer__brand"><strong>Gaucho Rocket Project</strong><p>Student rocketry at UC Santa Barbara.</p></div>
-<div><h3>Explore</h3><ul><li><a href="about.html">About</a></li><li><a href="members.html">Our Members</a></li></ul></div>
-<div><h3>Rockets</h3><ul><li><a href="halo.html">Halo</a></li><li><a href="stratis.html">Stratis</a></li><li><a href="sonus.html">Sonus</a></li></ul></div>
-<div><h3>Connect</h3><ul><li><a href="#">Instagram</a></li><li><a href="#">YouTube</a></li><li><a href="mailto:you@ucsb.edu">Email us</a></li></ul></div></div>
-<div class="footer__legal">&copy; <span id="year"></span> Gaucho Rocket Project, UC Santa Barbara</div></div></footer>
+<style>
+  .sponsors {
+    background: #0a1a2b;   /* UCSB navy blue */
+    color: #fff;
+    padding-block: clamp(4rem, 10vw, 7rem);
+  }
+  .sponsors .section-title { color: #fff; }
+  .sponsors__intro { max-width: 40rem; margin: 1rem 0 0; color: rgba(255,255,255,.85); }
+
+  .sponsors__tier {
+    margin: 3.5rem 0 1.5rem;
+    padding-bottom: .75rem;
+    border-bottom: 2px solid var(--gold, #febc11);
+    font-family: var(--display, "Archivo", sans-serif);
+    font-size: .9rem; font-weight: 800;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: #fff;
+  }
+  .sponsors__tier span { margin-left: .5rem; font-weight: 500; color: rgba(255,255,255,.7); }
+
+  /* 4-column grid */
+  .sponsor-grid {
+    list-style: none; margin: 0; padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+  }
+  @media (max-width: 900px) { .sponsor-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 420px) { .sponsor-grid { gap: .75rem; } }
+
+  /* white tile holding logo + name */
+  .sponsor__tile {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: .9rem;
+    height: 100%;
+    padding: 1.5rem 1rem 1.25rem;
+    box-sizing: border-box;
+    background: #fff;
+    color: var(--ink, #14202c);
+    border-radius: 6px;
+    border-top: 4px solid transparent;
+    text-align: center;
+    text-decoration: none;
+    transition: transform 160ms ease, box-shadow 160ms ease;
+  }
+  .sponsor-grid--gold .sponsor__tile { border-top-color: var(--gold, #febc11); }
+  a.sponsor__tile:hover, a.sponsor__tile:focus-visible {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(0,0,0,.35);
+  }
+
+  /* fixed logo size: every logo gets the same frame */
+  .sponsor__logo {
+    display: flex; align-items: center; justify-content: center;
+    width: 100%;
+    height: 5.5rem;          /* change this to resize all logos */
+    max-width: 10rem;
+  }
+  .sponsor__logo img {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+  .sponsor-grid--gold .sponsor__logo { height: 7rem; max-width: 12rem; }
+
+  .sponsor__name {
+    font-family: var(--display, "Archivo", sans-serif);
+    font-weight: 700; font-size: .95rem; letter-spacing: -.01em; line-height: 1.2;
+  }
+
+  .sponsors__cta {
+    margin-top: 4rem; padding-top: 3rem;
+    border-top: 1px solid rgba(255,255,255,.2);
+    text-align: center;
+  }
+  .sponsors__cta p { margin: 0 0 1.25rem; font-size: 1.25rem; }
+
+  @media (prefers-reduced-motion: reduce) { .sponsor__tile { transition: none; } }
+</style>
+
+<section class="sponsors" id="sponsors">
+  <div class="wrap">
+    <h2 class="section-title">Our Sponsors</h2>
+    <p class="sponsors__intro">Student-built rockets don’t fly without the people and companies who back us. Thank you.</p>
+
+    <h3 class="sponsors__tier">Gold Sponsors <span>$2,000+</span></h3>
+    <ul class="sponsor-grid sponsor-grid--gold">
+      <li class="sponsor">
+        <div class="sponsor__tile" href="https://www.as.ucsb.edu" target="_blank" rel="noopener">
+          <span class="sponsor__logo"><img src="images/asucsblogo.png" alt="" loading="lazy"></span>
+          <span class="sponsor__name">ASUCSB</span>
+        </div>
+      </li>
+      <li class="sponsor">
+        <div class="sponsor__tile">
+          <span class="sponsor__logo"><img src="images/logo1_vert_UCSB_black.png" alt="" loading="lazy"></span>
+          <span class="sponsor__name">Thanki Family</span>
+        </div>
+      </li>
+      <li class="sponsor">
+        <div class="sponsor__tile" href="https://www.vectornav.com" target="_blank" rel="noopener">
+          <span class="sponsor__logo"><img src="images/vectornavlogo.png" alt="" loading="lazy"></span>
+          <span class="sponsor__name">VectorNav</span>
+        </div>
+      </li>
+      <li class="sponsor">
+        <div class="sponsor__tile">
+          <span class="sponsor__logo"><img src="images/logo1_vert_UCSB_black.png" alt="" loading="lazy"></span>
+          <span class="sponsor__name">Strattan Family</span>
+        </div>
+      </li>
+      <li class="sponsor">
+        <a class="sponsor__tile" href="https://www.nasa.gov" target="_blank" rel="noopener">
+          <span class="sponsor__logo"><img src="images/nasalogo.png" alt="" loading="lazy"></span>
+          <span class="sponsor__name">NASA</span>
+        </a>
+      </li>
+    </ul>
+
+    <h3 class="sponsors__tier">Silver Sponsors</h3>
+    <ul class="sponsor-grid">
+      <li class="sponsor">
+        <a class="sponsor__tile" href="https://www.nasa.gov" target="_blank" rel="noopener">
+          <span class="sponsor__logo"><img src="images/logo1_vert_UCSB_black.png" alt="" loading="lazy"></span>
+          <span class="sponsor__name">SendCutSend</span>
+        </a>
+      </li>
+      <!-- copy a <li class="sponsor"> block for each sponsor -->
+    </ul>
+
+    <div class="sponsors__cta">
+      <p>Want to see your name here?</p>
+      <a class="btn" href="https://gofund.me/020362af3" target="_blank" rel="noopener">Sponsor Us</a>
+    </div>
+  </div>
+</section>
+
+<section id="join">
+  <div class="wrap split"><h2 class="section-title">Join the team</h2><div class="text"><p>No experience is needed. Bring curiosity and we will teach you the rest, whether you are into mechanical design, electronics, software, or running a team.</p><p>We meet every Tuesday at 6:30 p.m. in Engineering II Room 1519</p></div></div>
+</section>
+
+
+
+</main>  
+<footer id="links">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <img class="footer__logo" src="images/logo1_vert_UCSB_black.png" alt="Gaucho Rocket Project: Rocketry by the Sea">
+      </div>
+      <div>
+        <h3>Get involved</h3>
+        <ul>
+          <li><a href="documents/MemberHandbook.pdf" target="_blank" rel="noopener">Join the Team</a></li>
+          <li><a href="https://docs.google.com/document/d/17hOpU2L6X9PBhfuSnpYEAcZ8Fc9aE7PsCaNrhLpTMC8/edit?usp=sharing" target="_blank" rel="noopener">Meeting Schedule</a></li>
+          <li><a href="https://gofund.me/020362af3" target="_blank" rel="noopener">Sponsor Us</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Resources</h3>
+        <ul>
+          <li><a href="documents/MemberHandbook.pdf" target="_blank" rel="noopener">Member Handbook</a></li>
+          <li><a href="https://drive.google.com/drive/folders/1j0_6ir1pjnUqS8d6oWWcFeHHhp95E1Hc?usp=sharing" target="_blank" rel="noopener">Google Drive</a></li>
+          <li><a href="https://docs.google.com/document/d/17hOpU2L6X9PBhfuSnpYEAcZ8Fc9aE7PsCaNrhLpTMC8/edit?usp=sharing" target="_blank" rel="noopener">Club Calendar</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Connect</h3>
+        <ul>
+          <li><a href="https://www.instagram.com/gauchorocketproject/" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="https://www.youtube.com/@GauchoRocketProject" target="_blank" rel="noopener">YouTube</a></li>
+          <li><a href="mailto:gauchorocketproject@gmail.com">Email us</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__legal">&copy; <span id="year"></span> Gaucho Rocket Project, UC Santa Barbara</div>
+  </div>
+</footer>
 <script>document.getElementById('year').textContent=new Date().getFullYear();</script></body></html>
