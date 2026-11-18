@@ -281,34 +281,114 @@
 
 <section id="join"><div class="wrap split"><h2 class="section-title">Join the team</h2><div class="text"><p>No experience is needed. Bring curiosity and we will teach you the rest, whether you are into mechanical design, electronics, software, or running a team.</p><p>We meet every Tuesday at 6:30 p.m. in Engineering II Room 1519</p></div></div></section>
 
+<style>
+  .sponsors {
+    background: #003660;   /* UCSB navy blue */
+    color: #fff;
+    padding-block: clamp(4rem, 10vw, 7rem);
+  }
+  .sponsors .section-title { color: #fff; }
+  .sponsors__intro { max-width: 40rem; margin: 1rem 0 0; color: rgba(255,255,255,.85); }
+
+  .sponsors__tier {
+    margin: 3.5rem 0 1.5rem;
+    padding-bottom: .75rem;
+    border-bottom: 2px solid var(--gold, #febc11);
+    font-family: var(--display, "Archivo", sans-serif);
+    font-size: .9rem; font-weight: 800;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: #fff;
+  }
+  .sponsors__tier span { margin-left: .5rem; font-weight: 500; color: rgba(255,255,255,.7); }
+
+  /* 4-column grid */
+  .sponsor-grid {
+    list-style: none; margin: 0; padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+  }
+  @media (max-width: 900px) { .sponsor-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 420px) { .sponsor-grid { gap: .75rem; } }
+
+  /* white tile holding logo + name */
+  .sponsor__tile {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: .9rem;
+    height: 100%;
+    padding: 1.5rem 1rem 1.25rem;
+    box-sizing: border-box;
+    background: #fff;
+    color: var(--ink, #14202c);
+    border-radius: 6px;
+    border-top: 4px solid transparent;
+    text-align: center;
+    text-decoration: none;
+    transition: transform 160ms ease, box-shadow 160ms ease;
+  }
+  .sponsor-grid--gold .sponsor__tile { border-top-color: var(--gold, #febc11); }
+  a.sponsor__tile:hover, a.sponsor__tile:focus-visible {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(0,0,0,.35);
+  }
+
+  /* fixed logo size: every logo gets the same frame */
+  .sponsor__logo {
+    display: flex; align-items: center; justify-content: center;
+    width: 100%;
+    height: 5.5rem;          /* change this to resize all logos */
+    max-width: 10rem;
+  }
+  .sponsor__logo img {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+  .sponsor-grid--gold .sponsor__logo { height: 7rem; max-width: 12rem; }
+
+  .sponsor__name {
+    font-family: var(--display, "Archivo", sans-serif);
+    font-weight: 700; font-size: .95rem; letter-spacing: -.01em; line-height: 1.2;
+  }
+
+  .sponsors__cta {
+    margin-top: 4rem; padding-top: 3rem;
+    border-top: 1px solid rgba(255,255,255,.2);
+    text-align: center;
+  }
+  .sponsors__cta p { margin: 0 0 1.25rem; font-size: 1.25rem; }
+
+  @media (prefers-reduced-motion: reduce) { .sponsor__tile { transition: none; } }
+</style>
+
 <section class="sponsors" id="sponsors">
   <div class="wrap">
     <h2 class="section-title">Our Sponsors</h2>
-    <p class="sponsors__intro">Student-built rockets don't fly without the people and companies who back us. Thank you.</p>
+    <p class="sponsors__intro">Student-built rockets don’t fly without the people and companies who back us. Thank you.</p>
 
     <h3 class="sponsors__tier">Gold Sponsors <span>$1,000+</span></h3>
     <ul class="sponsor-grid sponsor-grid--gold">
       <li class="sponsor">
-        <a class="sponsor__card" href="https://example.com" target="_blank" rel="noopener">
-          <img src="images/logo1_vert_UCSB_black.png" alt="" loading="lazy">
-        </a>
-        <span class="sponsor__name">Strattan Family</span>
+        <div class="sponsor__tile">
+          <span class="sponsor__logo"><img src="images/logo1_vert_UCSB_black.png" alt="" loading="lazy"></span>
+          <span class="sponsor__name">Strattan Family</span>
+        </div>
       </li>
       <li class="sponsor">
-        <a class="sponsor__card" href="https://example.com" target="_blank" rel="noopener">
-          <img src="images/logo1_vert_UCSB_black.png" alt="" loading="lazy">
-        </a>
-        <span class="sponsor__name">Thanki Family</span>
+        <div class="sponsor__tile">
+          <span class="sponsor__logo"><img src="images/logo1_vert_UCSB_black.png" alt="" loading="lazy"></span>
+          <span class="sponsor__name">Thanki Family</span>
+        </div>
       </li>
     </ul>
 
     <h3 class="sponsors__tier">Supporters</h3>
     <ul class="sponsor-grid">
       <li class="sponsor">
-        <a class="sponsor__card" href="https://example.com" target="_blank" rel="noopener">
-          <img src="images/logo1_vert_UCSB_black.png" alt="" loading="lazy">
+        <a class="sponsor__tile" href="https://www.nasa.gov" target="_blank" rel="noopener">
+          <span class="sponsor__logo"><img src="images/logo1_vert_UCSB_black.png" alt="" loading="lazy"></span>
+          <span class="sponsor__name">NASA</span>
         </a>
-        <span class="sponsor__name">NASA</span>
       </li>
       <!-- copy a <li class="sponsor"> block for each sponsor -->
     </ul>
