@@ -6,6 +6,105 @@
 <link rel="stylesheet" href="styles.css"></head><body>
 <header class="page-hero page-hero--fit"><img class="page-hero__img" src="images/halo-main-photo.jpg" alt="" onerror="this.style.display='none'"><nav class="nav" aria-label="Main"><a class="nav__brand" href="index.html"><img class="nav__logo" src="images/logo1_vert_UCSB_white.png" alt="Gaucho Rocket Project"></a><ul><li><a href="about.html">About</a></li><li><a href="halo.html" aria-current="page">Halo</a></li><li><a href="stratis.html">Stratis</a></li><li><a href="sonus.html">Sonus</a></li><li><a href="members.html">Our Members</a></li></ul></nav><div class="page-hero__content"><h1>Halo</h1><p>Our vertical takeoff, vertical landing rocket.</p></div></header>
 <main><section><div class="wrap split"><h2 class="section-title">About Halo</h2><div class="text"><p>Halo is our largest liquid bi-propellant rocket, designed to be a vertical take off, vertical landing (VTVL) demonstrator. Halo is the culmination of our propulsion and avionics design skill and is a representation of our best work.</p></div></div></section>
+<section id="leadership"><div class="wrap"><h2 class="section-title">Leadership</h2>
+<p class="lt-intro">Halo is split into two teams, each run by a chief engineer. Click anyone for their contact info.</p>
+<div class="lt" data-source="#halo-leadership-data"></div>
+<!--
+  LEADERSHIP. Edit it here, or open halo-timeline-preview.html for a live editor (Copy HTML there, paste over this block).
+  Two teams, Mechanical (drawn on the left) and Avionics (right). Each has one head.
+  A head or lead can have "members" (names only, listed under them) and "leads" (the next row down, with headshots).
+  Every field but name is optional: title, photo (a path like images/headshots/Name.jpg), email, phone, linkedin.
+-->
+<script type="application/json" id="halo-leadership-data">
+{
+  "teams": [
+    {
+      "name": "Mechanical",
+      "head": {
+        "name": "Casey Strattan",
+        "title": "Halo Chief Engineer, Mechanical",
+        "email": "strattan@ucsb.edu",
+        "linkedin": "https://www.linkedin.com/in/john-casey-strattan/",
+        "leads": [
+          {
+            "name": "Lead name",
+            "title": "Propulsion Lead",
+            "members": [
+              { "name": "Member name" },
+              { "name": "Member name" },
+              { "name": "Member name" }
+            ]
+          },
+          {
+            "name": "Lead name",
+            "title": "Structures Lead",
+            "members": [
+              { "name": "Member name" },
+              { "name": "Member name" },
+              { "name": "Member name" }
+            ]
+          },
+          {
+            "name": "Lead name",
+            "title": "Fluid Systems Lead",
+            "members": [
+              { "name": "Member name" },
+              { "name": "Member name" }
+            ]
+          },
+          {
+            "name": "Lead name",
+            "title": "Ground Support Lead",
+            "members": [
+              { "name": "Member name" },
+              { "name": "Member name" }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "Avionics",
+      "head": {
+        "name": "Mark Adipietro",
+        "title": "Halo Chief Engineer, Avionics",
+        "photo": "images/headshots/MarkAdipietro.jpg",
+        "email": "MarkAdipietro@ucsb.edu",
+        "linkedin": "https://www.linkedin.com/in/mark-adipietro/",
+        "leads": [
+          {
+            "name": "Lead name",
+            "title": "Flight Software Lead",
+            "members": [
+              { "name": "Member name" },
+              { "name": "Member name" },
+              { "name": "Member name" }
+            ]
+          },
+          {
+            "name": "Lead name",
+            "title": "Electrical Lead",
+            "members": [
+              { "name": "Member name" },
+              { "name": "Member name" },
+              { "name": "Member name" }
+            ]
+          },
+          {
+            "name": "Lead name",
+            "title": "Guidance & Control Lead",
+            "members": [
+              { "name": "Member name" },
+              { "name": "Member name" }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
+</script>
+</div></section>
 <section class="alt"><div class="wrap"><h2 class="section-title">Specifications</h2>
 <!-- Specs: each button opens the panel right after it. To edit, change the text below; keep each button's aria-controls equal to its panel's id. -->
 <div class="spec-tree">
@@ -145,9 +244,10 @@
 </div>
 </div></section>
 <section id="timeline"><div class="wrap"><h2 class="section-title">Timeline</h2></div>
-<div class="tlA tlA--wide" data-source="#halo-timeline-data" data-zoom-base="1120"></div>
+<div class="tlA tlA--wide" data-source="#halo-timeline-data" data-show="event"></div>
 <!--
   TIMELINE ENTRIES. Edit them here, or open halo-timeline-preview.html for a live editor (Copy HTML there, paste over this list).
+  data-show (on the div above): the types shown when the page opens, e.g. "event" or "event flight". Visitors turn the others on in the legend.
   data-date:  YYYY-MM-DD for an exact day, or YYYY-MM if you only know the month.
   data-type:  design | test | flight | event
   Sub-steps (optional): a nested <ol> of <li data-date="...">text</li>. Clicking the entry spawns
@@ -329,5 +429,5 @@ document.querySelectorAll('.spec-tree').forEach(function (tree) {
     if (e.key === 'Escape' && open) { closeAll(); open.focus(); }
   });
 });
-</script><script src="timeline.js"></script><script src="diagram.js"></script>
+</script><script src="timeline.js"></script><script src="leadership.js"></script><script src="diagram.js"></script>
 </body></html>

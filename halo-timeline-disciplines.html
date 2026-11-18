@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Halo Timeline by Discipline</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+/* ---------- Preview page chrome ---------- */
+.pv-bar{background:var(--night);color:#fff;padding:1rem 0;font-family:var(--display)}
+.pv-bar .wrap{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;align-items:center;justify-content:space-between}
+.pv-bar strong{font-size:1.05rem}.pv-bar a{color:var(--gold);font-weight:600;font-size:.95rem}
+.dsc-tabs{background:#071422;font-family:var(--display)}
+.dsc-tabs .wrap{display:flex;flex-wrap:wrap}
+.dsc-tabs button{appearance:none;font:inherit;font-weight:800;font-size:1rem;color:#b7c3ce;background:none;border:0;padding:.8rem 1.4rem .85rem 0;margin-right:1.4rem;cursor:pointer;text-align:left}
+.dsc-tabs button small{display:block;font-weight:500;font-size:.8rem;color:#8796a4}
+.dsc-tabs button:hover{color:#fff}
+.dsc-tabs button[aria-selected="true"]{color:#fff;box-shadow:inset 0 -3px 0 var(--gold)}
+@media(max-width:600px){.dsc-tabs button{margin-right:1.1rem;padding:.7rem 0;font-size:.92rem}.dsc-tabs button small{display:none}}
+.dsc-intro{max-width:48rem;margin:.75rem 0 2.25rem;color:var(--muted);font-size:1.08rem}
+
+/* ---------- Disciplines: colours (checked as a colour-blind-safe set) and labels ---------- */
+:root{--tm-propulsion:#e87ba4;--tm-mechanical:#008300;--tm-electrical:#6250d6}
+.tm-propulsion{--tm:var(--tm-propulsion)}.tm-mechanical{--tm:var(--tm-mechanical)}.tm-electrical{--tm:var(--tm-electrical)}
+.dsc-sw{display:inline-block;flex:none;width:12px;height:12px;border-radius:3px;background:var(--tm)}
+.dsc-sw--tint{background:color-mix(in srgb,var(--tm) 15%,#fff);border:1.5px solid var(--tm)}
+.dsc-sw--all{background:#fff;border:1.5px solid rgba(20,32,44,.4)}
+.dsc-legend{list-style:none;margin:-1rem 0 1.75rem;padding:0;display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;font-family:var(--display);font-weight:600;font-size:.9rem}
+.dsc-legend li{display:inline-flex;align-items:center;gap:.5rem}
+.dsc-legend b{font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:.75rem;color:var(--muted)}
+.tlA__tools .dsc-legend{flex:1 0 100%;margin:0;font-size:.85rem}
+/* discipline tags in each card's top line */
+.dsc-tags{display:inline-flex;flex-wrap:wrap;gap:.2rem .65rem}
+.dsc-tag{display:inline-flex;align-items:center;gap:.35rem;font-family:var(--display);font-weight:600;font-size:.72rem;letter-spacing:.04em;color:var(--muted)}
+.dsc-tag .dsc-sw{width:8px;height:8px;border-radius:2px}
+.dsc-tag__short{display:none}
+.tlA.is-narrow .dsc-tag__full{display:none}.tlA.is-narrow .dsc-tag__short{display:inline}
+
+/* ---------- Option A: sides ---------- */
+.dsc-heads{position:sticky;top:var(--tools-h,0px);z-index:5;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:1rem;margin:-1.25rem 0 1rem;padding:.55rem 0;background:var(--paper);border-bottom:1px solid var(--line);font-family:var(--display);font-weight:800;font-size:.75rem;letter-spacing:.07em;text-transform:uppercase}
+.dsc-heads > span{display:inline-flex;align-items:center;gap:.4rem}
+.dsc-heads > span:nth-child(2){color:var(--muted)}
+.dsc-heads > span:last-child{justify-self:end}
+.tlA.is-narrow .dsc-heads{display:none}
+
+/* ---------- Option B: shaded cards ---------- */
+.dsc-b .tlA__item{--tint:15%}
+.dsc-b .tlA__item.is-future{--tint:7%}
+.dsc-b .tlA__item .tlA__card{background:var(--shade,#fff)}
+
+/* ---------- Option C: branches ---------- */
+.tlC .htl-chip__txt{display:none}
+.tlC .tlA__head{padding:.55rem .8rem .65rem}
+.tlC .tlA__title{font-size:1.04rem}
+.tlC .tlA__body{padding:0 .8rem .8rem}
+.tlC .tlA__body p{font-size:.98rem}
+.tlC__lane,.tlC__done{position:absolute;bottom:0;width:2px;transform:translateX(-50%)}
+.tlC__lane{background:repeating-linear-gradient(180deg,rgba(20,32,44,.28) 0 6px,transparent 6px 12px)}
+.tlC__done{bottom:auto;width:3px;background:var(--ink);transition:height .45s ease}
+.tlC:not(.is-narrow) .tlA__axis{opacity:.45}
+.tlC:not(.is-narrow) .tlA__progress{display:none}
+.tlC .tlA__links path.tlC__branch{stroke:var(--ink);stroke-width:3}
+.tlC__heads{position:sticky;top:var(--tools-h,0px);z-index:5;height:2.4rem;margin:-1.25rem 0 1rem;background:var(--paper);border-bottom:1px solid var(--line)}
+.tlC__head{position:absolute;top:50%;transform:translateY(-50%);display:inline-flex;align-items:center;gap:.45rem;font-family:var(--display);font-weight:800;font-size:.75rem;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap}
+.tlC.is-narrow .tlC__heads{display:none}
+.tlC__pick{display:inline-flex;flex-wrap:wrap}
+.tlC__pick button{appearance:none;display:inline-flex;align-items:center;gap:.4rem;font:inherit;font-weight:700;font-size:.85rem;padding:.4rem .7rem;background:#fff;border:1.5px solid rgba(20,32,44,.25);margin-right:-1.5px;color:var(--ink);cursor:pointer}
+.tlC__pick button[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:#fff;position:relative}
+.tlC:not(.is-narrow) .tlC__pick{display:none}
+@media(max-width:600px){.tlC__pick button{font-size:.78rem;padding:.35rem .5rem;gap:.3rem}}
+</style>
+</head><body>
+
+<div class="pv-bar"><div class="wrap"><strong>Halo timeline &middot; split by discipline (three options)</strong><span><a href="halo-timeline-preview.html">Editor preview</a> &nbsp; <a href="halo.html">Back to Halo page</a></span></div></div>
+<div class="dsc-tabs"><div class="wrap" role="tablist" aria-label="Options">
+  <button type="button" role="tab" id="tab-a" aria-controls="opt-a" aria-selected="true">A &middot; Sides<small>Mechanical left, electrical right</small></button>
+  <button type="button" role="tab" id="tab-b" aria-controls="opt-b" aria-selected="false">B &middot; Shaded<small>Mixed, tinted by discipline</small></button>
+  <button type="button" role="tab" id="tab-c" aria-controls="opt-c" aria-selected="false">C &middot; Branches<small>Splits after kickoff</small></button>
+</div></div>
+
+<main>
+<section id="opt-a" role="tabpanel" aria-labelledby="tab-a"><div class="wrap">
+  <h2 class="section-title">Timeline</h2>
+  <p class="dsc-intro">Propulsion and mechanical work runs down the left of the line; electrical and software down the right. Whole-team entries, and entries shared across both sides, sit on the line itself.</p>
+  <div class="tlA dsc-a"></div>
+</div></section>
+<section id="opt-b" role="tabpanel" aria-labelledby="tab-b" hidden><div class="wrap">
+  <h2 class="section-title">Timeline</h2>
+  <p class="dsc-intro">The layout stays as it is now. Each card is lightly tinted by its discipline; a card shared by two disciplines is split between both tints, and whole-team cards stay white.</p>
+  <div class="tlA dsc-b"></div>
+</div></section>
+<section id="opt-c" role="tabpanel" aria-labelledby="tab-c" hidden><div class="wrap">
+  <h2 class="section-title">Timeline</h2>
+  <p class="dsc-intro">The project starts as one line at kickoff, then splits into propulsion, mechanical and electrical branches. Shared entries bridge the branches they involve; whole-team entries span all three. On a phone, pick one branch at a time.</p>
+  <div class="dsc-c"></div>
+</div></section>
+</main>
+
+<!--
+  TIMELINE ENTRIES, same as halo.html plus a discipline on each entry:
+    data-team="propulsion", "mechanical" or "electrical" (electrical includes software).
+    Several disciplines: separate them with spaces, e.g. data-team="propulsion electrical".
+    Leave data-team off for whole-team entries.
+  These discipline tags are first guesses; correct them here.
+-->
+<ol class="htl-data" id="halo-timeline-data">
+  <li data-date="2025-07" data-type="event"><h3>"Halo" Project Kickoff!</h3><p>Summer 2025
+Inspired by Gruyere's VTVL, optimists took to the challenge</p></li>
+  <li data-date="2025-09" data-type="design" data-team="propulsion"><h3>First Design of N2O/IPA Engine</h3><p>1.25kN engine designed for short duration testing, requiring design of upstream system to support static testing</p></li>
+  <li data-date="2025-10-30" data-type="flight"><h3>Mojave Sphinx Launch</h3><p>In pursuit of more complex vehicles</p>
+    <ol>
+      <li data-date="2025-06">Parts ordered</li>
+      <li data-date="2025-08">Integration begins</li>
+      <li data-date="2025-09">Final integration, launch prep.</li>
+    </ol>
+  </li>
+  <li data-date="2025-11" data-type="design"><h3>Sights Set on Lander Challenge</h3><p>Vehicle redesigned for VTVL operation and 40 second burn with nominal thrust of 2.5kN and max thrust of 3kN at sea level</p></li>
+  <li data-date="2026-01" data-type="design" data-team="propulsion"><h3>Feed System to Support 3kN</h3><p>Designed for 3kN, N2O/IPA, 3:1 throttling</p></li>
+  <li data-date="2026-01" data-type="event" data-team="electrical"><h3>Halo Jr. Inception</h3><p>Dual-rotor, single motor vehicle begins design</p></li>
+  <li data-date="2026-02" data-type="design"><h3>Halo Design Review</h3><p>3 hour presentation given outlining reasoning for all design choices thus far; feedback from launch and hardware experts</p></li>
+  <li data-date="2026-03" data-type="design" data-team="mechanical"><h3>Halo v5</h3><p>CAD model including all propulsion systems and ground support systems, cold gas thrusters, TVC, and structures published</p></li>
+  <li data-date="2026-04" data-type="event"><h3>Workshop Acquired!</h3><p>Santa Barbara Hackerspace (SBHX) graciously rents GRP a shed for storage and work</p></li>
+  <li data-date="2026-05" data-type="event"><h3>Funding Delays...</h3><p>Construction halts due to lack of funding. high pressure infrastructure for cold flow tests inaccessible</p></li>
+  <li data-date="2026-06" data-type="event" data-team="propulsion electrical"><h3>URCA</h3><p>Five posters presented at URCA fair and later selected to be featured at the UCSB library!</p>
+    <ol>
+      <li data-date="2026-06">Propulsion displays valve assemblies, and throttle and injector concepts</li>
+      <li data-date="2026-06">Avionics displays simulated algorithms and Halo Junior design</li>
+    </ol>
+  </li>
+  <li data-date="2026-08" data-type="design" data-team="propulsion mechanical"><h3>"Ortus", Halo Test Platform Inception</h3><p>Learn-by-doing: Ortus scale systems allow for rapid iteration at a significantly lower cost; experimental Halo designs tested</p>
+    <ol>
+      <li data-date="2026-06">Sensor Integration</li>
+      <li data-date="2026-09">Ortus Injector (v1)</li>
+      <li data-date="2026-11">Static Venturi Throttle Test</li>
+      <li data-date="2026-12">Supercharge</li>
+      <li data-date="2026-10">Hotfire Stand</li>
+      <li data-date="2027-01">TVC</li>
+      <li data-date="2027-02">Regenerative Cooled Engine</li>
+      <li data-date="2026-11">Ortus Injector (v2)</li>
+    </ol>
+  </li>
+  <li data-date="2026-10-03" data-type="test" data-team="propulsion mechanical"><h3>Fall FAR 1: Scrubbed</h3><p>Scrubbed hotfire due to poor test stand design and preparation</p></li>
+  <li data-date="2026-10-17" data-type="test" data-team="propulsion"><h3>Fall FAR 3: Cold Flow</h3><p>Hotfire turned cold flow due to poor launch ops</p></li>
+  <li data-date="2026-10-24" data-type="test" data-team="propulsion electrical"><h3>Fall FAR 6: 2x Static Fires!</h3><p>First successful hot fire!!!</p>
+    <ol>
+      <li data-date="2026-10-24">Hotfire of stock Mojave Sphinx</li>
+      <li data-date="2026-10-24">Hotfire of Ortus Injector (v1)</li>
+      <li data-date="2026-10-24">First data acquisition</li>
+    </ol>
+  </li>
+  <li data-date="2026-10-24" data-type="flight" data-team="electrical"><h3>Halo Jr. Maiden Flight!</h3><p>Halo Jr. flies for the first time; successfully maintains altitude!</p>
+    <ol>
+      <li data-date="2026-10-24">First flight and Hover</li>
+      <li data-date="2026-12">Controlled ascent to 5 ft, hover, and descent</li>
+      <li data-date="2027-01">Controlled flight with specifications given for hovering and landing locations.</li>
+    </ol>
+  </li>
+  <li data-date="2026-11-21" data-type="test" data-team="propulsion"><h3>Fall FAR 8: Injector (v1), Engine Static</h3><p>Hotfire of Injector (v1), graphite throat, phenolic nozzles</p></li>
+  <li data-date="2026-12-04" data-type="event"><h3>Fall Quarter Ends</h3><p></p></li>
+  <li data-date="2026-12-05" data-type="test" data-team="propulsion"><h3>Fall FAR 10: Injector (v2), Engine Static</h3><p>Hotfire of Injector (v2), Engine (v1)</p></li>
+  <li data-date="2026-12" data-type="design" data-team="electrical"><h3>Halo Avionics Distributed System</h3><p>Designs for all PCBs to be used and tested on halo jr. then scaled and edited for Halo.</p>
+    <ol>
+      <li data-date="2026-12">Motor board to be used in ignition/TVC</li>
+      <li data-date="2026-12">RTK integration with a ground station and satellite</li>
+      <li data-date="2027-01">Parts ordered to begin in house manufacturing of PCBs for Halo</li>
+    </ol>
+  </li>
+  <li data-date="2027-01-02" data-type="test" data-team="mechanical electrical"><h3>Winter FAR 0: Ortus TVC</h3><p>Ortus Supercharge and TVC static tests</p></li>
+  <li data-date="2027-01-16" data-type="test" data-team="propulsion"><h3>Winter FAR 2: Short Duration 3kN Static</h3><p>Short duration static test of N2O/IPA, 3kN engine</p></li>
+  <li data-date="2027-01-16" data-type="test" data-team="propulsion"><h3>FAR (??): Potential Winter Break Hotfire</h3><p></p></li>
+  <li data-date="2027-01-31" data-type="event" data-team="propulsion"><h3>Liquid Symposium</h3><p>Presentation of "Throttling via Cavitation"</p></li>
+  <li data-date="2027-02-06" data-type="test" data-team="propulsion"><h3>Winter FAR 5: Medium Duration 3kN Static</h3><p>Long duration static test of N2O/IPA, 3kN engine; regeneratively cooled, throttled</p></li>
+  <li data-date="2027-02-20" data-type="test" data-team="propulsion mechanical"><h3>Winter FAR 7: Variable Duration 3kN Static</h3><p>Short and long duration static test of 3kN engine, thrust vectored</p></li>
+  <li data-date="2027-03-06" data-type="test" data-team="propulsion electrical"><h3>Winter FAR 9: Full 40s 3kN Static</h3><p>Simulated 40s flight profile static test</p></li>
+  <li data-date="2027-03-12" data-type="event"><h3>Winter Quarter Ends</h3><p></p></li>
+  <li data-date="2027-04-03" data-type="test"><h3>Spring FAR 1: Fully Integrated Static</h3><p></p></li>
+  <li data-date="2027-04-17" data-type="flight"><h3>Spring FAR 3: Tethered Hover</h3><p>Halo tethered hover</p></li>
+  <li data-date="2027-05-01" data-type="flight"><h3>Spring FAR 5: Halo Full Flight Attempt</h3><p>Halo flies!</p></li>
+  <li data-date="2027-06-04" data-type="event"><h3>Spring Quarter Ends</h3><p></p></li>
+</ol>
+
+<script src="timeline.js"></script>
+<script>
+(function () {
+  var H = window.HaloTimeline, U = H.util;
+  var model = H.readModel(document.getElementById('halo-timeline-data'));
+  var getItems = function () { return H.toItems(model); };
+
+  /* Disciplines. "long" is used in legends and headings, "label" in card tags, "short" on phones. */
+  var TEAMS = {
+    propulsion: { label: 'Propulsion', long: 'Propulsion', short: 'Prop' },
+    mechanical: { label: 'Mechanical', long: 'Mechanical', short: 'Mech' },
+    electrical: { label: 'Electrical', long: 'Electrical & software', short: 'Elec' }
+  };
+  var KEYS = Object.keys(TEAMS), LEFT = ['propulsion', 'mechanical'], RIGHT = ['electrical'];
+  var teamsOf = function (it) { return it.teams.filter(function (k) { return TEAMS[k]; }); };
+
+  function tags(it) {
+    var ts = teamsOf(it);
+    return '<span class="dsc-tags">' + (ts.length ? ts.map(function (k) {
+      return '<span class="dsc-tag tm-' + k + '"><span class="dsc-sw"></span><span class="dsc-tag__full">' + TEAMS[k].label + '</span><span class="dsc-tag__short">' + TEAMS[k].short + '</span></span>';
+    }).join('') : '<span class="dsc-tag"><span class="dsc-sw dsc-sw--all"></span><span class="dsc-tag__full">Whole team</span><span class="dsc-tag__short">All</span></span>') + '</span>';
+  }
+  function teamLegend(tint) {
+    return '<ul class="dsc-legend"><li><b>Discipline</b></li>' + KEYS.map(function (k) {
+      return '<li class="tm-' + k + '"><span class="dsc-sw' + (tint ? ' dsc-sw--tint' : '') + '"></span>' + TEAMS[k].long + '</li>';
+    }).join('') + '<li><span class="dsc-sw dsc-sw--all"></span>Whole team</li></ul>';
+  }
+  // the toolbar sticks to the top of the screen; the column headings stick just below it
+  function stickHeads(root) {
+    var tools = root.querySelector('.tlA__tools');
+    var set = function () { root.style.setProperty('--tools-h', tools.offsetHeight + 'px'); };
+    set();
+    if (window.ResizeObserver) new ResizeObserver(set).observe(tools); else H.onRedraw(set);
+  }
+
+  /* ---------- A: propulsion and mechanical on the left, electrical on the right, shared on the line ---------- */
+  var a = document.querySelector('.dsc-a');
+  H.mount(a, getItems, null, { spacing: H.DEFAULT_SPACING, metaExtra: tags, side: function (it) {
+    var ts = teamsOf(it);
+    if (!ts.length) return 'C';
+    if (ts.every(function (k) { return LEFT.indexOf(k) > -1; })) return 'L';
+    if (ts.every(function (k) { return RIGHT.indexOf(k) > -1; })) return 'R';
+    return 'C';
+  } });
+  a.querySelector('.htl-legend').insertAdjacentHTML('afterend', teamLegend(false));
+  a.querySelector('.tlA__tools').insertAdjacentHTML('afterend', '<div class="dsc-heads" aria-hidden="true">' +
+    '<span>' + LEFT.map(function (k) { return '<span class="dsc-sw tm-' + k + '"></span>'; }).join('') + LEFT.map(function (k) { return TEAMS[k].long; }).join(' &amp; ') + '</span>' +
+    '<span>Whole team &amp; shared</span>' +
+    '<span>' + RIGHT.map(function (k) { return TEAMS[k].long; }).join(' &amp; ') + RIGHT.map(function (k) { return '<span class="dsc-sw tm-' + k + '"></span>'; }).join('') + '</span></div>');
+  stickHeads(a);
+
+  /* ---------- B: today's layout, cards tinted by discipline (split when shared) ---------- */
+  var b = document.querySelector('.dsc-b');
+  H.mount(b, getItems, null, { spacing: H.DEFAULT_SPACING, metaExtra: tags, itemAttrs: function (it) {
+    var ts = teamsOf(it);
+    if (!ts.length) return '';
+    var c = ts.map(function (k) { return 'color-mix(in srgb,var(--tm-' + k + ') var(--tint),#fff)'; });
+    // shared cards: one tint per discipline, side by side, blending where they meet
+    var n = c.length, bg = n === 1 ? c[0] : 'linear-gradient(90deg,' + c.map(function (x, i) {
+      return x + ' ' + (i * 100 / n + (i ? 12 : 0)) + '% ' + ((i + 1) * 100 / n - (i < n - 1 ? 12 : 0)) + '%';
+    }).join(',') + ')';
+    return ' style="--shade:' + bg + '"';
+  } });
+  b.querySelector('.htl-legend').insertAdjacentHTML('afterend', teamLegend(true));
+
+  /* ---------- C: branches ---------- */
+  mountBranches(document.querySelector('.dsc-c'), getItems, KEYS);
+
+  /* tabs: one option at a time; remembered in the address (#a, #b, #c) */
+  var tabs = document.querySelectorAll('[role="tab"]');
+  function show(id) {
+    tabs.forEach(function (t) {
+      var on = t.id === 'tab-' + id;
+      t.setAttribute('aria-selected', on);
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+    });
+    H.redraw();
+  }
+  tabs.forEach(function (t) { t.addEventListener('click', function () { var id = t.id.slice(4); history.replaceState(null, '', '#' + id); show(id); }); });
+  var start = (location.hash.match(/^#([abc])$/) || [])[1] || 'a';
+  show(start);
+
+  /* ================= Branch layout (option C) =================
+     One line at kickoff that splits into a lane per discipline. Single-discipline entries sit in their lane;
+     shared entries put a dot on each of their lanes, joined by a bridge, with the card hanging below it.
+     Same data, dates, today marker, toolbar and click-to-open steps as the main timeline. */
+  function mountBranches(root, getItems, LANES) {
+    var DAY = U.DAY, mark = U.mark;
+    var spacing = H.DEFAULT_SPACING, showAll = false, open = -1, openId = null;
+    var items = [], lis = [], tickEls = {}, lanes = [], narrow = null, pick = LANES[0], rootK = -1;
+    var uid = 'tlC' + Math.random().toString(36).slice(2, 7);
+    root.classList.add('tlA', 'tlC');
+    root.innerHTML = U.legend + teamLegend(false) +
+      '<div class="tlA__tools" data-keep-open>' +
+        '<span class="tlC__pick" role="group" aria-label="Branch">' + LANES.map(function (k) {
+          return '<button type="button" class="tm-' + k + '" data-lane="' + k + '" aria-pressed="false"><span class="dsc-sw"></span>' + TEAMS[k].label + '</button>';
+        }).join('') + '</span>' +
+        '<button type="button" class="tlA__expand" aria-pressed="false">Show all descriptions</button>' +
+        '<label class="tlA__spacing">Spacing <input type="range" min="0.6" max="6" step="0.1"> <output></output></label></div>' +
+      '<div class="tlC__heads" aria-hidden="true">' + LANES.map(function (k) {
+        return '<span class="tlC__head tm-' + k + '"><span class="dsc-sw"></span>' + TEAMS[k].long + '</span>';
+      }).join('') + '</div>' +
+      '<div class="tlA__stage"><div class="tlA__axis"></div><div class="tlA__progress"></div><div class="tlC__lanes"></div>' +
+      '<div class="tlA__span" aria-hidden="true"></div><div class="tlA__ticks" aria-hidden="true"></div><svg class="tlA__links" aria-hidden="true"></svg>' +
+      '<div class="tlA__today" aria-hidden="true"><span class="tlA__todayLine"></span><span class="htl-now"></span><span class="tlA__todayLabel"><b>Today</b><span></span><span></span></span></div>' +
+      '<ol class="tlA__list"></ol></div>';
+    var $ = function (s) { return root.querySelector(s); };
+    var stage = $('.tlA__stage'), list = $('.tlA__list'), svg = $('.tlA__links'), ticks = $('.tlA__ticks'), today = $('.tlA__today'),
+        todayTxt = today.querySelectorAll('.tlA__todayLabel span'), progress = $('.tlA__progress'), spanEl = $('.tlA__span'),
+        laneBox = $('.tlC__lanes'), heads = root.querySelectorAll('.tlC__head'), pickBtns = root.querySelectorAll('.tlC__pick button'),
+        expandBtn = $('.tlA__expand'), slider = $('.tlA__spacing input'), sliderOut = $('.tlA__spacing output');
+    stickHeads(root);
+
+    function showSpacing() { slider.value = spacing; sliderOut.textContent = '1 month ≈ ' + Math.round(spacing * 30.44) + ' px'; }
+    showSpacing();
+    expandBtn.addEventListener('click', function () {
+      showAll = !showAll;
+      root.classList.toggle('show-all', showAll);
+      expandBtn.setAttribute('aria-pressed', showAll);
+      expandBtn.textContent = showAll ? 'Hide descriptions' : 'Show all descriptions';
+      layout(false);
+    });
+    var slideEnd;
+    slider.addEventListener('input', function () {
+      spacing = U.clampSpacing(slider.value); showSpacing();
+      root.classList.add('is-sliding'); clearTimeout(slideEnd);
+      slideEnd = setTimeout(function () { root.classList.remove('is-sliding'); }, 200);
+      layout(false);
+    });
+    pickBtns.forEach(function (bt) { bt.addEventListener('click', function () { pick = bt.getAttribute('data-lane'); openId = null; build(); }); });
+
+    function build() {
+      narrow = stage.clientWidth < 720;
+      root.classList.toggle('is-narrow', narrow);
+      pickBtns.forEach(function (bt) { bt.setAttribute('aria-pressed', bt.getAttribute('data-lane') === pick); });
+      lanes = narrow ? [pick] : LANES.slice();
+      // on a phone only the chosen branch shows, plus whole-team entries
+      items = getItems().filter(function (it) { return !narrow || !teamsOf(it).length || it.teams.indexOf(pick) > -1; });
+      items.forEach(function (it) {
+        var ls = [];
+        it.teams.forEach(function (k) { var i = lanes.indexOf(k); if (i > -1 && ls.indexOf(i) < 0) ls.push(i); });
+        if (!ls.length) ls = lanes.map(function (_, i) { return i; });
+        ls.sort(function (x, y) { return x - y; });
+        it.lanes = ls; it.a = ls[0]; it.b = ls[ls.length - 1];
+      });
+      // the first entry, when it's a whole-team one (kickoff), sits above the split
+      rootK = !narrow && items.length && !teamsOf(items[0]).length ? 0 : -1;
+      open = -1;
+      items.forEach(function (it, k) { if (it.id === openId) open = k; });
+      if (open < 0) openId = null;
+      list.innerHTML = items.map(function (it, k) {
+        var isRoot = k === rootK, span = !isRoot && it.b > it.a;
+        var subDots = isRoot ? '' : it.subs.map(function () { return '<span class="tlA__sub' + (k === open ? ' is-shown' : '') + '" aria-hidden="true">' + mark(it.type) + '</span>'; }).join('');
+        var subRows = it.subs.map(function (s) {
+          return '<li>' + mark(it.type) + '<span class="tlA__subdate">' + U.subLabel(s, it) + '</span><span class="tlA__subtxt">' + s.html + '</span></li>';
+        }).join('');
+        var dots = (isRoot ? [-1] : it.lanes).map(function (l) { return '<span class="tlA__dot" data-l="' + l + '" aria-hidden="true">' + mark(it.type) + '</span>'; }).join('');
+        return '<li class="tlA__item t-' + it.type + '" data-side="' + (isRoot ? 'C' : 'R') + '"' + (span ? ' data-span' : '') + '>' + subDots + dots +
+          '<div class="tlA__card"><button class="tlA__head" type="button" aria-expanded="false" aria-controls="' + uid + k + '">' +
+            '<span class="tlA__meta"><span class="htl-chip">' + mark(it.type) + '<span class="htl-chip__txt">' + H.TYPES[it.type] + '</span></span><span class="tlA__date">' + it.label + '</span><span class="tlA__status"></span>' +
+            (it.subs.length ? '<span class="tlA__count">' + it.subs.length + ' step' + (it.subs.length === 1 ? '' : 's') + '</span>' : '') + tags(it) + '</span>' +
+            '<span class="tlA__title">' + it.title + '</span></button>' +
+          '<div class="tlA__body' + (it.body.trim() ? '' : ' tlA__body--nodesc') + '" id="' + uid + k + '" hidden>' + (it.body.trim() ? '<p>' + it.body + '</p>' : '') +
+            (subRows ? '<ol class="tlA__subs" aria-label="Steps">' + subRows + '</ol>' : '') + '</div></div></li>';
+      }).join('');
+      lis = list.querySelectorAll(':scope > .tlA__item');
+      lis.forEach(function (li, k) {
+        li.querySelector('.tlA__head').addEventListener('click', function () { toggle(k); });
+        li.querySelectorAll('.tlA__dot').forEach(function (d) { d.addEventListener('click', function () { toggle(k); }); });
+        var sd = li.querySelectorAll('.tlA__sub'), rows = li.querySelectorAll('.tlA__subs li');
+        if (sd.length) rows.forEach(function (row, j) {
+          var on = function () { sd[j].classList.add('is-hot'); row.classList.add('is-hot'); };
+          var off = function () { sd[j].classList.remove('is-hot'); row.classList.remove('is-hot'); };
+          [row, sd[j]].forEach(function (el) { el.addEventListener('mouseenter', on); el.addEventListener('mouseleave', off); });
+        });
+      });
+      laneBox.innerHTML = lanes.map(function () { return '<span class="tlC__lane"></span><span class="tlC__done"></span>'; }).join('');
+      applyOpen();
+      layout(false);
+    }
+    function applyOpen() {
+      root.classList.toggle('has-focus', open > -1);
+      lis.forEach(function (li, j) {
+        li.classList.toggle('is-open', j === open);
+        li.classList.toggle('is-dim', open > -1 && j !== open);
+        li.querySelector('.tlA__head').setAttribute('aria-expanded', j === open);
+        li.querySelector('.tlA__body').hidden = j !== open;
+      });
+    }
+    function toggle(k) {
+      open = open === k ? -1 : k;
+      openId = open > -1 ? items[open].id : null;
+      applyOpen();
+      layout(true);
+      lis.forEach(function (li, j) {
+        li.querySelectorAll('.tlA__sub').forEach(function (sd) {
+          if (j === open) { sd.offsetHeight; sd.classList.add('is-shown'); } else sd.classList.remove('is-shown');
+        });
+      });
+    }
+    root.addEventListener('keydown', function (e) { if (e.key === 'Escape' && open > -1) { var k = open; toggle(k); lis[k].querySelector('.tlA__head').focus(); } });
+    document.addEventListener('click', function (e) {
+      if (open < 0 || !lis[open]) return;
+      var t = e.target;
+      if (lis[open].querySelector('.tlA__card').contains(t) || (t.closest && t.closest('.tlA__dot, .tlA__sub, [data-keep-open]'))) return;
+      toggle(open);
+    });
+
+    function layout(spawn) {
+      var W = stage.clientWidth;
+      if ((W < 720) !== narrow) return build();
+      if (!items.length) { list.innerHTML = '<li class="tlA__empty">No entries with a valid date yet.</li>'; stage.style.height = '120px'; svg.innerHTML = ''; return; }
+      var now = H.nowT(), ppd = spacing, pad = 30, n = lanes.length;
+      var DOT_GAP = 18, STEP_GAP = 24, CARD_GAP = 14, BR = 72;
+      var gut = narrow ? 62 : 80, G = narrow ? 34 : 24;           // time axis x; gap from a lane's line to its cards
+      var laneW = (W - gut) / n;
+      var laneX = lanes.map(function (_, i) { return narrow ? gut : gut + 24 + i * laneW; });
+      var rightOf = function (l) { return l < n - 1 ? laneX[l + 1] - 18 : W; };
+      var cx = (laneX[0] + laneX[n - 1]) / 2;
+      stage.style.setProperty('--axis-x', gut + 'px');
+      heads.forEach(function (h, i) { h.style.left = (laneX[i] - 6) + 'px'; });
+
+      // 1. size the cards: single-lane cards fill their lane, shared ones stretch across theirs
+      var hs = [];
+      lis.forEach(function (li, k) {
+        var it = items[k], card = li.querySelector('.tlA__card'), left, w, future = it.t > now;
+        if (k === rootK) { w = Math.min(420, W - gut - 40); left = cx - w / 2; }
+        else { left = laneX[it.a] + G; w = rightOf(it.b) - left; }
+        it.cardLeft = left;
+        card.style.left = left + 'px'; card.style.width = w + 'px';
+        li.classList.toggle('is-future', future);
+        li.querySelector('.tlA__status').textContent = future ? 'Planned' : '';
+      });
+      lis.forEach(function (li, k) { hs[k] = li.querySelector('.tlA__card').offsetHeight; });
+
+      // 2. place dots in date order on one shared time scale. Each lane keeps track of where its line and its
+      //    card space are free; a shared entry needs all of its lanes free, and its card covers the lines it spans.
+      var rootIt = rootK > -1 ? items[rootK] : null;
+      var rootY = rootIt ? pad + hs[rootK] + 26 : null, laneTop = rootIt ? rootY + BR : 4;
+      var lineFree = lanes.map(function () { return laneTop + 28; }), cardFree = lanes.map(function () { return laneTop + 8; });
+      var rg = U.range(items), d0 = rootIt ? new Date(rootIt.date.getFullYear(), rootIt.date.getMonth(), 1).getTime() - DAY : rg[0], d1 = rg[1];
+      var clampT = function (t) { return rootIt ? Math.max(t, rootIt.t) : t; }; // steps dated before kickoff start at the split
+      var pts = [];
+      items.forEach(function (it, k) { if (k !== rootK) pts.push({ t: it.t, k: k }); });
+      if (open > -1 && open !== rootK) items[open].subs.forEach(function (s, j) { pts.push({ t: clampT(s.t), k: -1, j: j }); });
+      pts.sort(function (p, q) { return p.t - q.t || (p.k < 0) - (q.k < 0); });
+      var prev = rootIt ? { t: rootIt.t, y: rootY } : null;
+      pts.forEach(function (p) {
+        var py = prev ? prev.y + (p.t - prev.t) / DAY * ppd : pad + (p.t - d0) / DAY * ppd, l;
+        if (p.k > -1) {
+          var it = items[p.k], span = it.b > it.a, off = span ? 16 : -20;
+          for (l = it.a; l <= it.b; l++) {
+            if (span || it.lanes.indexOf(l) > -1) py = Math.max(py, lineFree[l]);
+            py = Math.max(py, span ? cardFree[l] : cardFree[l] - off);
+          }
+          var bottom = py + off + hs[p.k];
+          it.lanes.forEach(function (l) { lineFree[l] = py + (p.k === open ? STEP_GAP : DOT_GAP); });
+          for (l = it.a; l <= it.b; l++) {
+            cardFree[l] = bottom + CARD_GAP;
+            if (span && l > it.a) lineFree[l] = Math.max(lineFree[l], bottom + 16);
+          }
+        } else {
+          var ol = items[open].a;
+          py = Math.max(py, lineFree[ol]);
+          lineFree[ol] = py + STEP_GAP;
+        }
+        p.y = py; prev = p;
+      });
+      // time -> position, through those points (ticks, "Today", hidden steps)
+      var knots = [];
+      (rootIt ? [{ t: rootIt.t, y: rootY }] : []).concat(pts).forEach(function (p) {
+        var kn = knots[knots.length - 1];
+        if (kn && kn.t === p.t) kn.y1 = p.y; else knots.push({ t: p.t, y0: p.y, y1: p.y });
+      });
+      var y = function (t) {
+        var m = knots.length;
+        if (t <= knots[0].t) return knots[0].y0 - (knots[0].t - t) / DAY * ppd;
+        if (t >= knots[m - 1].t) return knots[m - 1].y1 + (t - knots[m - 1].t) / DAY * ppd;
+        for (var i = 0; i < m - 1; i++) {
+          var p = knots[i], q = knots[i + 1];
+          if (t < q.t) return t === p.t ? p.y0 : p.y1 + (q.y0 - p.y1) * (t - p.t) / (q.t - p.t);
+        }
+      };
+      var dotY = [], stepY = [];
+      pts.forEach(function (p) { if (p.k > -1) dotY[p.k] = p.y; else stepY[p.j] = p.y; });
+      var nowY = y(Math.min(Math.max(now, d0), d1));
+
+      // 3. month ticks on the time axis at the left
+      var keep = {}, lastLabel = -1e9, d = new Date(d0); d = new Date(d.getFullYear(), d.getMonth() + 1, 1);
+      while (d.getTime() < d1) {
+        var key = d.getTime(), ty = y(key), te = tickEls[key], jan = d.getMonth() === 0;
+        keep[key] = 1;
+        if (!te) {
+          te = tickEls[key] = { tick: document.createElement('span'), label: document.createElement('span') };
+          te.tick.className = 'tlA__tick' + (jan ? ' is-major' : '');
+          te.label.className = 'tlA__year' + (jan ? '' : ' is-month');
+          te.label.textContent = jan ? d.getFullYear() : U.MONTHS[d.getMonth()];
+          ticks.appendChild(te.tick); ticks.appendChild(te.label);
+        }
+        te.tick.style.top = ty + 'px'; te.label.style.top = ty + 'px';
+        var showL = ty > 6 && Math.abs(ty - nowY) >= 40 && (jan || ty - lastLabel >= 46);
+        te.label.style.visibility = showL ? '' : 'hidden';
+        if (showL) lastLabel = ty;
+        d = new Date(d.getFullYear(), d.getMonth() + 1, 1);
+      }
+      Object.keys(tickEls).forEach(function (key) { if (!keep[key]) { tickEls[key].tick.remove(); tickEls[key].label.remove(); delete tickEls[key]; } });
+
+      // 4. lanes (solid up to today, dashed after), the kickoff trunk and branches, cards, dots and connectors
+      var laneEls = laneBox.children;
+      lanes.forEach(function (_, i) {
+        var ln = laneEls[2 * i], dn = laneEls[2 * i + 1];
+        ln.style.left = dn.style.left = laneX[i] + 'px';
+        ln.style.top = dn.style.top = laneTop + 'px';
+        dn.style.height = Math.max(0, nowY - laneTop) + 'px';
+      });
+      var bottomMost = 0, paths = '', subPaths = '';
+      if (rootIt) {
+        var rli = lis[rootK];
+        rli.querySelector('.tlA__card').style.top = pad + 'px';
+        var rd = rli.querySelector('.tlA__dot'); rd.style.left = cx + 'px'; rd.style.top = rootY + 'px';
+        paths += '<path class="tlC__branch" d="M' + cx + ',' + (pad + hs[rootK]) + ' L' + cx + ',' + rootY + '"/>';
+        laneX.forEach(function (lx) {
+          paths += '<path class="tlC__branch" d="M' + cx + ',' + rootY + ' C' + cx + ',' + (rootY + BR * 0.55) + ' ' + lx + ',' + (laneTop - BR * 0.45) + ' ' + lx + ',' + laneTop + '"/>';
+        });
+        bottomMost = pad + hs[rootK];
+      }
+      lis.forEach(function (li, k) {
+        if (k === rootK) return;
+        var it = items[k], dy = dotY[k], span = it.b > it.a, future = it.t > now, dim = open > -1 && k !== open;
+        var top = dy + (span ? 16 : -20), card = li.querySelector('.tlA__card');
+        card.style.top = top + 'px';
+        bottomMost = Math.max(bottomMost, top + hs[k]);
+        li.querySelectorAll('.tlA__dot').forEach(function (dt) { dt.style.left = laneX[+dt.getAttribute('data-l')] + 'px'; dt.style.top = dy + 'px'; });
+        var cls = 't-' + it.type + (future ? ' is-future' : '') + (dim ? ' is-dim' : '') + (spawn ? ' is-spawn' : '');
+        paths += '<path class="' + cls + '" style="animation-delay:380ms" d="' + (span
+          ? 'M' + (laneX[it.a] + 9) + ',' + dy + ' L' + (laneX[it.b] - 9) + ',' + dy   // bridge between the shared lanes
+          : 'M' + (laneX[it.a] + 12) + ',' + dy + ' L' + it.cardLeft + ',' + dy) + '"/>';
+        var rows = li.querySelectorAll('.tlA__subs li'), ox = laneX[it.a];
+        li.querySelectorAll('.tlA__sub').forEach(function (sd, j) {
+          var s = it.subs[j], sy = k === open ? stepY[j] : y(clampT(s.t)), sF = s.t > now;
+          sd.style.left = ox + 'px';
+          sd.style.setProperty('--py', dy + 'px'); sd.style.setProperty('--y', sy + 'px'); sd.style.setProperty('--d', (90 + j * 70) + 'ms');
+          sd.classList.toggle('is-future', sF); rows[j].classList.toggle('is-future', sF);
+          if (k === open) {
+            var ry = top + rows[j].offsetTop + rows[j].offsetHeight / 2;
+            subPaths += '<path class="t-' + it.type + ' is-sub' + (sF ? ' is-future' : '') + (spawn ? ' is-spawn' : '') + '" style="animation-delay:' + (480 + j * 70) + 'ms" d="M' + (ox + 7) + ',' + sy + ' L' + (ox + G * 0.5) + ',' + sy + ' L' + it.cardLeft + ',' + ry + '"/>';
+          }
+        });
+      });
+      svg.innerHTML = paths + subPaths;
+      if (open > -1 && open !== rootK) {
+        var ys = [dotY[open]].concat(stepY.filter(function (v) { return v != null; }));
+        var lo = Math.min.apply(null, ys) - 9, hi = Math.max.apply(null, ys) + 9;
+        spanEl.className = 'tlA__span is-on t-' + items[open].type;
+        spanEl.style.left = laneX[items[open].a] + 'px'; spanEl.style.top = lo + 'px'; spanEl.style.height = (hi - lo) + 'px';
+      } else spanEl.classList.remove('is-on');
+      stage.style.height = (Math.max(y(d1), bottomMost) + pad) + 'px';
+      today.style.top = nowY + 'px';
+      progress.style.height = nowY + 'px';
+      todayTxt[0].textContent = U.fmtShort(now);
+      todayTxt[1].textContent = new Date(now).getFullYear();
+    }
+    H.onRedraw(function () { layout(false); });
+    build();
+  }
+})();
+</script>
+</body></html>

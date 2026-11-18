@@ -77,22 +77,36 @@
     return [Math.min(a, n - 30 * DAY), Math.max(b, n + 30 * DAY)];
   }
   var mark = function (type) { return '<span class="htl-mark t-' + type + '"></span>'; };
-  var legend = '<ul class="htl-legend">' + Object.keys(TYPES).map(function (k) { return '<li>' + mark(k) + TYPES[k] + '</li>'; }).join('') +
-    '<li><span class="htl-now" aria-hidden="true"></span>Today</li><li><span class="htl-faded" aria-hidden="true">' + mark('design') + mark('test') + '</span>Faded = planned</li></ul>';
+  var legendKeys = '<li class="htl-legend__key"><span class="htl-now" aria-hidden="true"></span>Today</li>' +
+    '<li class="htl-legend__key"><span class="htl-faded" aria-hidden="true">' + mark('design') + mark('test') + '</span>Faded = planned</li>';
+  var legend = '<ul class="htl-legend">' + Object.keys(TYPES).map(function (k) { return '<li>' + mark(k) + TYPES[k] + '</li>'; }).join('') + legendKeys + '</ul>';
+  // the timeline's own legend: each type is a button that shows or hides that type (hidden ones are greyed out)
+  var SHORT = { design: 'Design', test: 'Test', flight: 'Flight', event: 'Event' };   // button labels on phones
+  function toggleLegend(shown) {
+    return '<ul class="htl-legend htl-legend--toggles" aria-label="Show on the timeline">' + Object.keys(TYPES).map(function (k) {
+      return '<li><button type="button" class="htl-toggle' + (shown[k] ? '' : ' is-off') + '" data-type="' + k + '" aria-pressed="' + !!shown[k] + '">' + mark(k) +
+        '<span class="htl-toggle__full">' + TYPES[k] + '</span><span class="htl-toggle__short">' + SHORT[k] + '</span></button></li>';
+    }).join('') + legendKeys + '</ul>';
+  }
 
   var renderers = [];
 
   /* ---------------- Timeline (Option A) ---------------- */
-  /* opts: spacing (px per day on open); side(item, index) -> 'L', 'R' or 'C' (centred on the line, below its dot);
+  /* opts: spacing (px per day on open); show -> types shown on open (default: data-show on the element, else events only);
+     side(item, index) -> 'L', 'R' or 'C' (centred on the line, below its dot);
      itemAttrs(item) -> extra attributes for the entry; metaExtra(item) -> extra HTML in the card's top line */
   function mountTimeline(root, getItems, onOpenChange, opts) {
     opts = opts || {};
-    var items = [], lis = [], open = -1, openId = null, tickEls = {};
+    var items = [], lis = [], open = -1, openId = null, tickEls = {}, hiddenAll = false;
     var spacing = clampSpacing(opts.spacing), showAll = false;
+    // which types are on the line; the legend buttons toggle them
+    var shown = {};
+    (opts.show || (root.getAttribute('data-show') || 'event').split(/[\s,]+/)).forEach(function (k) { if (TYPES[k]) shown[k] = true; });
     // data-zoom-base="1120": the timeline is laid out for that width and, on wider screens, zoomed up as a whole to fill it
     var zoomBase = +(root.getAttribute('data-zoom-base') || opts.zoomBase || 0), zoom = 1;
-    root.innerHTML = legend +
-      '<div class="tlA__tools" data-keep-open><button type="button" class="tlA__expand" aria-pressed="false">Show all descriptions</button>' +
+    // the legend sits in the toolbar, which sticks to the top of the screen
+    root.innerHTML = '<div class="tlA__tools" data-keep-open>' + toggleLegend(shown) +
+      '<button type="button" class="tlA__expand" aria-pressed="false">Show all descriptions</button>' +
       '<label class="tlA__spacing">Spacing <input type="range" min="0.6" max="6" step="0.1"> <output></output></label>' +
       '<span class="tlA__zoomhint">or ' + (MAC ? '\u2318' : 'Ctrl') + ' + scroll' + (MAC ? ' / pinch' : '') + ' over the timeline</span></div>' +
       '<div class="tlA__stage"><div class="tlA__axis"></div><div class="tlA__progress"></div><div class="tlA__span" aria-hidden="true"></div><div class="tlA__ticks" aria-hidden="true"></div>' +
@@ -142,10 +156,36 @@
       if (opts.onSpacing) opts.onSpacing(spacing);
     }, { passive: false });
 
+    // legend buttons: show or hide a type. The date at the top of the screen stays put while the line re-flows.
+    var toggles = root.querySelectorAll('.htl-toggle');
+    function setShown(k, on) {
+      shown[k] = on;
+      toggles.forEach(function (b) {
+        if (b.getAttribute('data-type') !== k) return;
+        b.setAttribute('aria-pressed', on); b.classList.toggle('is-off', !on);
+      });
+    }
+    toggles.forEach(function (b) {
+      b.addEventListener('click', function () {
+        var k = b.getAttribute('data-type'), st = stage.getBoundingClientRect().top, py = null, t = null;
+        var barBottom = Math.max(0, root.querySelector('.tlA__tools').getBoundingClientRect().bottom);
+        if (curMap && items.length && st < barBottom) { py = (barBottom - st) / zoom; t = curMap.timeAt(py); }
+        setShown(k, !shown[k]);
+        root.classList.add('is-sliding'); clearTimeout(slideEnd);
+        slideEnd = setTimeout(function () { root.classList.remove('is-sliding'); }, 200);
+        build();
+        if (t != null && curMap && items.length) window.scrollBy({ top: (curMap.y(t) - py) * zoom, behavior: 'instant' });
+      });
+    });
+
     function build() {
-      items = getItems();
+      var all = getItems();
+      items = all.filter(function (it) { return shown[it.type]; });
+      hiddenAll = all.length > 0 && !items.length;
       open = -1;
       items.forEach(function (it, k) { if (it.id === openId) open = k; });
+      // the open entry's type was just hidden: it closes
+      if (openId != null && open < 0) { openId = null; if (onOpenChange) onOpenChange(null); }
       list.innerHTML = items.map(function (it, k) {
         var subDots = it.subs.map(function () { return '<span class="tlA__sub' + (k === open ? ' is-shown' : '') + '" aria-hidden="true">' + mark(it.type) + '</span>'; }).join('');
         var subRows = it.subs.map(function (s) {
@@ -199,6 +239,12 @@
       if (onOpenChange && !quiet) onOpenChange(openId);
     }
     function openById(id) {
+      // an entry of a hidden type (e.g. picked in the preview editor) turns its type back on first
+      if (!items.some(function (it) { return it.id === id; })) {
+        var hit = getItems().filter(function (it) { return it.id === id; })[0];
+        if (!hit || shown[hit.type]) return;
+        setShown(hit.type, true); build();
+      }
       for (var k = 0; k < items.length; k++) {
         if (items[k].id !== id) continue;
         if (k !== open) toggle(k, true);
@@ -220,7 +266,11 @@
     });
 
     function layout(spawn) {
-      if (!items.length) { list.innerHTML = '<li class="tlA__empty">No entries with a valid date yet.</li>'; stage.style.height = '120px'; svg.innerHTML = ''; return; }
+      root.classList.toggle('is-empty', !items.length);
+      if (!items.length) {
+        list.innerHTML = '<li class="tlA__empty">' + (hiddenAll ? 'Every type is hidden. Turn one on in the legend above.' : 'No entries with a valid date yet.') + '</li>';
+        stage.style.height = '120px'; svg.innerHTML = ''; ticks.innerHTML = ''; tickEls = {}; curMap = null; return;
+      }
       var r = range(items), d0 = r[0], d1 = r[1], now = nowT();
       if (zoomBase) {   // fit the screen: zoom = available width / design width (never below 1)
         var avail = root.clientWidth;
