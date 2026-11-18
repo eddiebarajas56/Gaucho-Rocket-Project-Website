@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Halo Specs, Timeline and Leadership Editor</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+/* ---------- Preview page layout: timeline left, editor right ---------- */
+.pv-bar{background:var(--night);color:#fff;padding:1rem 0;font-family:var(--display)}
+.pv-bar .wrap{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;align-items:center;justify-content:space-between}
+.pv-bar strong{font-size:1.05rem}.pv-bar a{color:var(--gold);font-weight:600;font-size:.95rem}
+.pv-bar button{font:inherit;font-weight:600;font-size:.9rem;cursor:pointer;background:transparent;color:#fff;border:1px solid rgba(255,255,255,.35);padding:.3rem .7rem}
+.pv-bar button:hover{background:var(--gold);color:var(--night)}
+.pv-layout{display:grid;grid-template-columns:minmax(0,1fr) 440px;align-items:start}
+body.ed-off .pv-layout{grid-template-columns:minmax(0,1fr)}
+body.ed-off .ed{display:none}
+
+/* ---------- Editor (plain, preview only) ---------- */
+.ed{position:sticky;top:0;height:100vh;overflow:auto;background:#fff;border-left:1px solid var(--line);font-family:var(--display);font-size:.85rem;color:var(--ink)}
+.ed__bar{position:sticky;top:0;z-index:2;display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;padding:.6rem .75rem;background:var(--night);color:#fff}
+.ed__bar strong{margin-right:auto;font-size:.95rem}
+.ed__count{width:100%;font-size:.75rem;color:#b7c3ce}
+.ed button{font:inherit;font-weight:600;cursor:pointer;border:1px solid rgba(20,32,44,.25);background:#fff;color:var(--ink);padding:.28rem .55rem}
+.ed button:hover{background:var(--gold);border-color:var(--gold)}
+.ed__bar button{border-color:rgba(255,255,255,.35);background:transparent;color:#fff}
+.ed__bar button:hover{color:var(--night)}
+.ed__help{margin:0;padding:.6rem .75rem;color:var(--muted);font-size:.78rem;line-height:1.45;border-bottom:1px solid var(--line)}
+.ed__help code{font-size:.75rem;background:var(--fog);padding:0 .2rem}
+.ed__status{margin:0;padding:.45rem .75rem;font-size:.78rem;color:var(--muted);border-bottom:1px solid var(--line);min-height:1.9rem}
+.ed table{width:100%;border-collapse:collapse;table-layout:fixed}
+.ed th{text-align:left;font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:.5rem .3rem .25rem}
+.ed td{padding:.18rem .25rem;vertical-align:top}
+.ed__entry{border-top:2px solid rgba(20,32,44,.55)}
+.ed__entry.is-active{background:#fff8df}
+.ed__entry td:first-child{padding-left:.6rem}
+.ed__entry td:last-child{padding-right:.6rem}
+.ed input,.ed select,.ed textarea{display:block;width:100%;box-sizing:border-box;margin:0;font:inherit;font-family:var(--display);font-size:.85rem;padding:.3rem .4rem;border:1px solid rgba(20,32,44,.22);border-radius:0;background:#fff;color:var(--ink)}
+.ed textarea{font-family:var(--body);font-size:.95rem;line-height:1.35;resize:vertical}
+.ed .is-bad{border-color:#e34948;background:#fdecec}
+.ed__stepcell{padding-left:1.4rem!important}
+.ed__steps{border-left:3px solid var(--fog)}
+.ed__steps td{padding:.12rem .2rem}
+.ed__x{width:100%;padding:.3rem 0!important;text-align:center}
+.ed__add{margin:.25rem 0 .45rem .2rem;font-size:.8rem!important}
+.ed__nosteps{padding:.15rem .2rem;color:var(--muted);font-size:.78rem}
+.ed__out{padding:.75rem;border-top:1px solid var(--line)}
+.ed__out summary{cursor:pointer;font-weight:600}
+.ed__out textarea{height:16rem;margin-top:.5rem;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.72rem;white-space:pre}
+@media(max-width:1000px){.pv-layout{grid-template-columns:minmax(0,1fr)}.ed{position:static;height:auto;border-left:0;border-top:2px solid var(--ink)}}
+
+/* tabs: Timeline / Specifications */
+.ed__tabs{position:sticky;top:0;z-index:3;display:flex;height:2.6rem;background:#071422}
+.ed__tabs button{flex:1;margin:0;padding:0;border:0;border-radius:0;background:transparent;color:#b7c3ce;font-weight:700;font-size:.85rem;cursor:pointer}
+.ed__tabs button:hover{border:0;background:rgba(255,255,255,.08);color:#fff}
+.ed__tabs button[aria-selected="true"]{background:var(--night);color:#fff;box-shadow:inset 0 -3px 0 var(--gold)}
+.ed__bar{top:2.6rem}
+.ed__sublabel{margin:.4rem 0 .15rem .2rem;font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.ed__btns{display:flex;gap:2px}.ed__btns button{flex:1;padding:.3rem 0!important}
+.ed button:disabled{opacity:.35;cursor:default;background:#fff;border-color:rgba(20,32,44,.25)}
+.ed__entry.is-moved{animation:ed-moved 1.4s ease}
+@keyframes ed-moved{0%,45%{background:#ffe7a0}100%{background:transparent}}
+
+/* leadership editor: one block per person, indented under who they report to */
+.ld__team{padding:.6rem .75rem .9rem;border-top:2px solid rgba(20,32,44,.55)}
+.ld__teamname{display:grid;grid-template-columns:3.5rem minmax(0,1fr);gap:.25rem;align-items:center;margin-bottom:.4rem}
+.ld__teamname span,.ld__lvl{font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.ed .ld__teamname input{font-weight:800}
+.ld__p .ld__p{margin-left:.5rem;padding-left:.5rem;border-left:3px solid var(--fog)}
+.ld__row{display:grid;grid-template-columns:3rem minmax(0,1fr) minmax(0,1fr) auto;gap:.25rem;align-items:center;padding:.14rem .15rem}
+.ld__p--m>.ld__row{grid-template-columns:3rem minmax(0,1fr) auto}
+.ld__row .ed__btns button{width:1.65rem;flex:none}
+.ld__p.is-active>.ld__row{background:#fff8df}
+.ld__p.is-moved>.ld__row{animation:ed-moved 1.4s ease}
+.ld__more{display:grid;grid-template-columns:1fr 1fr;gap:.3rem .35rem;margin:.1rem 0 .35rem 3.25rem;padding:.45rem .5rem .5rem;background:var(--fog)}
+.ld__more label{display:block;font-size:.6rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.ed .ld__more input,.ed .ld__more select{margin-top:.12rem;font-weight:500}
+.ld__more .wide{grid-column:1/-1}
+.ld__adds{display:flex;gap:.3rem;margin:.15rem 0 .4rem 3.25rem}
+.ed .ld__adds button{font-size:.78rem}
+</style></head><body>
+
+<div class="pv-bar"><div class="wrap"><strong>Halo specs, timeline and leadership &middot; preview with editors</strong><span><button type="button" id="ed-toggle">Hide editor</button> &nbsp; <a href="halo.html">Back to Halo page</a></span></div></div>
+
+<div class="pv-layout">
+<main>
+<section class="alt" id="specs"><div class="wrap">
+  <h2 class="section-title">Specifications</h2>
+  <div class="spec-tree" id="spec-preview"></div>
+</div></section>
+<section id="timeline"><div class="wrap">
+  <h2 class="section-title">Timeline</h2>
+  <div class="tlA"></div>
+</div></section>
+<section class="alt" id="leadership"><div class="wrap">
+  <h2 class="section-title">Leadership</h2>
+  <p class="lt-intro">Halo is split into two teams, each run by a chief engineer. Click anyone for their contact info.</p>
+  <div class="lt" id="leadership-preview"></div>
+</div></section>
+</main>
+
+<aside class="ed" id="editor" data-keep-open aria-label="Editors">
+  <div class="ed__tabs" role="tablist">
+    <button type="button" role="tab" data-tab="specs" aria-selected="false">Specifications</button>
+    <button type="button" role="tab" data-tab="timeline" aria-selected="true">Timeline</button>
+    <button type="button" role="tab" data-tab="leadership" aria-selected="false">Leadership</button>
+  </div>
+
+  <div data-panel="timeline">
+    <div class="ed__bar">
+      <strong>Edit timeline</strong>
+      <button type="button" data-act="add">+ Entry</button>
+      <button type="button" data-act="sort">Sort steps</button>
+      <button type="button" data-act="copy">Copy HTML</button>
+      <button type="button" data-act="reset">Reset</button>
+      <span class="ed__count"></span>
+    </div>
+    <p class="ed__help">Entries stay in order of their date: after you change an entry's date, it moves into place when you click away or press Tab or Enter. Dates are <code>YYYY-MM</code> (month only) or <code>YYYY-MM-DD</code>. Steps can fall before or after their entry. Text can include HTML, like <code>N&lt;sub&gt;2&lt;/sub&gt;O</code>. Edits redraw the timeline as you type and are saved in this browser. When you're done, use <b>Copy HTML</b> and paste it over the list in halo.html (or ask Claude to do it).</p>
+    <p class="ed__status" aria-live="polite"></p>
+    <table class="ed__table"></table>
+    <details class="ed__out"><summary>HTML for halo.html</summary><textarea readonly aria-label="Generated timeline HTML"></textarea></details>
+  </div>
+
+  <div data-panel="specs" hidden>
+    <div class="ed__bar">
+      <strong>Edit specifications</strong>
+      <button type="button" data-act="add">+ Spec</button>
+      <button type="button" data-act="copy">Copy HTML</button>
+      <button type="button" data-act="reset">Reset</button>
+      <span class="ed__count"></span>
+    </div>
+    <p class="ed__help">Each spec is a tile (name and value) whose panel shows a one-line summary, numbered decisions and options that were ruled out. Use the arrows to reorder. Text can include HTML. Edits redraw the block above as you type and are saved in this browser. When you're done, use <b>Copy HTML</b> and paste it over the <code>spec-tree</code> block in halo.html (or ask Claude to do it).</p>
+    <p class="ed__status" aria-live="polite"></p>
+    <table class="ed__table"></table>
+    <details class="ed__out"><summary>HTML for halo.html</summary><textarea readonly aria-label="Generated specifications HTML"></textarea></details>
+  </div>
+
+  <div data-panel="leadership" hidden>
+    <div class="ed__bar">
+      <strong>Edit leadership</strong>
+      <button type="button" data-act="copy">Copy HTML</button>
+      <button type="button" data-act="reset">Reset</button>
+      <span class="ed__count"></span>
+    </div>
+    <p class="ed__help">Each team has one chief at the top. <b>+ Lead</b> adds a box to the row under the chief, <b>+ Sub-lead</b> starts a smaller row under a lead, and <b>+ Member</b> adds a name to someone's list. <b>&hellip;</b> opens a person's photo, email, phone, LinkedIn and who they report to (change that to move them). Photos are paths like <code>images/headshots/Name.jpg</code>. Each team's box widens as it grows; if the two no longer fit side by side they stack. Edits redraw the tree as you type and are saved in this browser. When you're done, use <b>Copy HTML</b> and paste it over the <code>halo-leadership-data</code> block in halo.html (or ask Claude to do it).</p>
+    <p class="ed__status" aria-live="polite"></p>
+    <div class="ld"></div>
+    <details class="ed__out"><summary>HTML for halo.html</summary><textarea readonly aria-label="Generated leadership HTML"></textarea></details>
+  </div>
+</aside>
+</div>
+
+<!--
+  TIMELINE ENTRIES (placeholders: edit these).
+  data-date:  YYYY-MM-DD for an exact day, or YYYY-MM if you only know the month.
+  data-type:  design | test | flight | event
+  Sub-steps (optional): a nested <ol> of <li data-date="...">text</li>. Clicking the entry spawns
+  a dot for each one at its own date. They can fall before or after the main date.
+  (On this preview page you can also edit them in the table on the right.)
+  Order doesn't matter; everything is sorted by date. Past/future is worked out from today's date automatically.
+-->
+<ol class="htl-data" id="halo-timeline-data">
+  <li data-date="2025-07" data-type="event"><h3>"Halo" Project Kickoff!</h3><p>Summer 2025
+Inspired by Gruyere's VTVL, optimists took to the challenge</p></li>
+  <li data-date="2025-09" data-type="design"><h3>First Design of N2O/IPA Engine</h3><p>1.25kN engine designed for short duration testing, requiring design of upstream system to support static testing</p></li>
+  <li data-date="2025-10-30" data-type="flight"><h3>Mojave Sphinx Launch</h3><p>In pursuit of more complex vehicles</p>
+    <ol>
+      <li data-date="2025-06">Parts ordered</li>
+      <li data-date="2025-08">Integration begins</li>
+      <li data-date="2025-09">Final integration, launch prep.</li>
+    </ol>
+  </li>
+  <li data-date="2025-11" data-type="design"><h3>Sights Set on Lander Challenge</h3><p>Vehicle redesigned for VTVL operation and 40 second burn with nominal thrust of 2.5kN and max thrust of 3kN at sea level</p></li>
+  <li data-date="2026-01" data-type="design"><h3>Feed System to Support 3kN</h3><p>Designed for 3kN, N2O/IPA, 3:1 throttling</p></li>
+  <li data-date="2026-01" data-type="event"><h3>Halo Jr. Inception</h3><p>Dual-rotor, single motor vehicle begins design</p></li>
+  <li data-date="2026-02" data-type="design"><h3>Halo Design Review</h3><p>3 hour presentation given outlining reasoning for all design choices thus far; feedback from launch and hardware experts</p></li>
+  <li data-date="2026-03" data-type="design"><h3>Halo v5</h3><p>CAD model including all propulsion systems and ground support systems, cold gas thrusters, TVC, and structures published</p></li>
+  <li data-date="2026-04" data-type="event"><h3>Workshop Acquired!</h3><p>Santa Barbara Hackerspace (SBHX) graciously rents GRP a shed for storage and work</p></li>
+  <li data-date="2026-05" data-type="event"><h3>Funding Delays...</h3><p>Construction halts due to lack of funding. high pressure infrastructure for cold flow tests inaccessible</p></li>
+  <li data-date="2026-06" data-type="event"><h3>URCA</h3><p>Five posters presented at URCA fair and later selected to be featured at the UCSB library!</p>
+    <ol>
+      <li data-date="2026-06">Propulsion displays valve assemblies, and throttle and injector concepts</li>
+      <li data-date="2026-06">Avionics displays simulated algorithms and Halo Junior design</li>
+    </ol>
+  </li>
+  <li data-date="2026-08" data-type="design"><h3>"Ortus", Halo Test Platform Inception</h3><p>Learn-by-doing: Ortus scale systems allow for rapid iteration at a significantly lower cost; experimental Halo designs tested</p>
+    <ol>
+      <li data-date="2026-06">Sensor Integration</li>
+      <li data-date="2026-09">Ortus Injector (v1)</li>
+      <li data-date="2026-11">Static Venturi Throttle Test</li>
+      <li data-date="2026-12">Supercharge</li>
+      <li data-date="2026-10">Hotfire Stand</li>
+      <li data-date="2027-01">TVC</li>
+      <li data-date="2027-02">Regenerative Cooled Engine</li>
+      <li data-date="2026-11">Ortus Injector (v2)</li>
+    </ol>
+  </li>
+  <li data-date="2026-10-03" data-type="test"><h3>Fall FAR 1: Scrubbed</h3><p>Scrubbed hotfire due to poor test stand design and preparation</p></li>
+  <li data-date="2026-10-17" data-type="test"><h3>Fall FAR 3: Cold Flow</h3><p>Hotfire turned cold flow due to poor launch ops</p></li>
+  <li data-date="2026-10-24" data-type="test"><h3>Fall FAR 6: 2x Static Fires!</h3><p>First successful hot fire!!!</p>
+    <ol>
+      <li data-date="2026-10-24">Hotfire of stock Mojave Sphinx</li>
+      <li data-date="2026-10-24">Hotfire of Ortus Injector (v1)</li>
+      <li data-date="2026-10-24">First data acquisition</li>
+    </ol>
+  </li>
+  <li data-date="2026-10-24" data-type="flight"><h3>Halo Jr. Maiden Flight!</h3><p>Halo Jr. flies for the first time; successfully maintains altitude!</p>
+    <ol>
+      <li data-date="2026-10-24">First flight and Hover</li>
+      <li data-date="2026-12">Controlled ascent to 5 ft, hover, and descent</li>
+      <li data-date="2027-01">Controlled flight with specifications given for hovering and landing locations.</li>
+    </ol>
+  </li>
+  <li data-date="2026-11-21" data-type="test"><h3>Fall FAR 8: Injector (v1), Engine Static</h3><p>Hotfire of Injector (v1), graphite throat, phenolic nozzles</p></li>
+  <li data-date="2026-12-04" data-type="event"><h3>Fall Quarter Ends</h3><p></p></li>
+  <li data-date="2026-12-05" data-type="test"><h3>Fall FAR 10: Injector (v2), Engine Static</h3><p>Hotfire of Injector (v2), Engine (v1)</p></li>
+  <li data-date="2026-12" data-type="design"><h3>Halo Avionics Distributed System</h3><p>Designs for all PCBs to be used and tested on halo jr. then scaled and edited for Halo.</p>
+    <ol>
+      <li data-date="2026-12">Motor board to be used in ignition/TVC</li>
+      <li data-date="2026-12">RTK integration with a ground station and satellite</li>
+      <li data-date="2027-01">Parts ordered to begin in house manufacturing of PCBs for Halo</li>
+    </ol>
+  </li>
+  <li data-date="2027-01-02" data-type="test"><h3>Winter FAR 0: Ortus TVC</h3><p>Ortus Supercharge and TVC static tests</p></li>
+  <li data-date="2027-01-16" data-type="test"><h3>Winter FAR 2: Short Duration 3kN Static</h3><p>Short duration static test of N2O/IPA, 3kN engine</p></li>
+  <li data-date="2027-01-16" data-type="test"><h3>FAR (??): Potential Winter Break Hotfire</h3><p></p></li>
+  <li data-date="2027-01-31" data-type="event"><h3>Liquid Symposium</h3><p>Presentation of "Throttling via Cavitation"</p></li>
+  <li data-date="2027-02-06" data-type="test"><h3>Winter FAR 5: Medium Duration 3kN Static</h3><p>Long duration static test of N2O/IPA, 3kN engine; regeneratively cooled, throttled</p></li>
+  <li data-date="2027-02-20" data-type="test"><h3>Winter FAR 7: Variable Duration 3kN Static</h3><p>Short and long duration static test of 3kN engine, thrust vectored</p></li>
+  <li data-date="2027-03-06" data-type="test"><h3>Winter FAR 9: Full 40s 3kN Static</h3><p>Simulated 40s flight profile static test</p></li>
+  <li data-date="2027-03-12" data-type="event"><h3>Winter Quarter Ends</h3><p></p></li>
+  <li data-date="2027-04-03" data-type="test"><h3>Spring FAR 1: Fully Integrated Static</h3><p></p></li>
+  <li data-date="2027-04-17" data-type="flight"><h3>Spring FAR 3: Tethered Hover</h3><p>Halo tethered hover</p></li>
+  <li data-date="2027-05-01" data-type="flight"><h3>Spring FAR 5: Halo Full Flight Attempt</h3><p>Halo flies!</p></li>
+  <li data-date="2027-06-04" data-type="event"><h3>Spring Quarter Ends</h3><p></p></li>
+</ol>
+
+<!-- Copy of the Specifications block in halo.html; the spec editor starts from this. -->
+<template id="halo-specs-data">
+<div class="spec-tree">
+  <!-- Type -->
+  <button class="spec-tree__tile" type="button" id="spec-type-tile" aria-expanded="false" aria-controls="spec-type"><span class="k">Type</span><span class="v">VTVL demonstrator</span><span class="chev" aria-hidden="true"></span></button>
+  <div class="spec-tree__panel" id="spec-type" role="region" aria-labelledby="spec-type-tile" hidden>
+    <div class="spec-tree__tree">
+      <div class="spec-tree__root"><div class="k">Type</div><div class="v">VTVL demonstrator</div><p>Takes off, hovers, and lands on its own engine.</p></div>
+      <ol class="spec-tree__branches" aria-label="Design decisions">
+        <li><span class="spec-num">01</span><div><h3>A 30 m hop, not a high-altitude flight</h3><p>The goal is controlled vertical flight and a powered landing, so the vehicle only needs to reach about 30 m.</p></div></li>
+        <li><span class="spec-num">02</span><div><h3>Reliability over raw performance</h3><p>A hop doesn&rsquo;t need launch-vehicle efficiency. It needs an engine that behaves the same way every time across a wide throttle range.</p></div></li>
+        <li><span class="spec-num">03</span><div><h3>Sized as a 100 kg class vehicle</h3><p>Thrust, tank size, and propellant load all follow from keeping a roughly 100 kg vehicle in the air for about 40 seconds.</p></div></li>
+      </ol>
+    </div>
+  </div>
+  <!-- Thrust -->
+  <button class="spec-tree__tile" type="button" id="spec-thrust-tile" aria-expanded="false" aria-controls="spec-thrust"><span class="k">Thrust</span><span class="v">2.5 kN</span><span class="chev" aria-hidden="true"></span></button>
+  <div class="spec-tree__panel" id="spec-thrust" role="region" aria-labelledby="spec-thrust-tile" hidden>
+    <div class="spec-tree__tree">
+      <div class="spec-tree__root"><div class="k">Thrust</div><div class="v">2.5 kN</div><p>Raised from 1.5 kN to give the landing more authority.</p></div>
+      <ol class="spec-tree__branches" aria-label="Design decisions">
+        <li><span class="spec-num">01</span><div><h3>Raised from 1.5 kN to 2.5 kN</h3><p>Initial sizing gave 1.5&times; thrust-to-weight. Trajectory and control analysis showed the descent needs more margin to arrest sink rate and correct for gusts.</p></div></li>
+        <li><span class="spec-num">02</span><div><h3>Headroom up to 3.0 kN</h3><p>The feed system is sized for 120% thrust so the controller has room above the hover point.</p></div></li>
+        <li><span class="spec-num">03</span><div><h3>Nozzle built for sea level</h3><p>An expansion ratio of 3.65 brings the exhaust out at about 0.95 bar, close to ambient, so the nozzle is efficient where Halo actually flies.</p></div></li>
+      </ol>
+    </div>
+  </div>
+  <!-- Propellants -->
+  <button class="spec-tree__tile" type="button" id="spec-propellants-tile" aria-expanded="false" aria-controls="spec-propellants"><span class="k">Propellants</span><span class="v">N<sub>2</sub>O / IPA</span><span class="chev" aria-hidden="true"></span></button>
+  <div class="spec-tree__panel" id="spec-propellants" role="region" aria-labelledby="spec-propellants-tile" hidden>
+    <div class="spec-tree__tree">
+      <div class="spec-tree__root"><div class="k">Propellants</div><div class="v">N<sub>2</sub>O / IPA</div><p>Nitrous oxide and isopropyl alcohol.</p></div>
+      <ol class="spec-tree__branches" aria-label="Design decisions">
+        <li><span class="spec-num">01</span><div><h3>Nitrous oxide as oxidizer</h3><p>Non-hypergolic, low toxicity, inexpensive, and storable at high pressure without cryogenics, which keeps handling practical for a student team.</p></div></li>
+        <li><span class="spec-num">02</span><div><h3>Isopropyl alcohol as fuel</h3><p>In small engines IPA burns 2&ndash;5% more efficiently than ethanol, offsetting most of ethanol&rsquo;s theoretical edge, and it meters more consistently through small orifices.</p></div></li>
+        <li><span class="spec-num">03</span><div><h3>Mixture ratio 2.1 at 330 psia</h3><p>Chosen with NASA CEA to balance efficiency against chamber heating: about 270 s theoretical vacuum specific impulse at 1957 K.</p></div></li>
+      </ol>
+    </div>
+    <div class="spec-tree__ruled"><p>Considered and ruled out</p><ul>
+      <li><b>Liquid oxygen</b><span>cryogenic handling and boil-off</span></li>
+      <li><b>Ethanol</b><span>lower combustion efficiency at small scale</span></li>
+    </ul></div>
+  </div>
+  <!-- Oxidizer state -->
+  <button class="spec-tree__tile" type="button" id="spec-oxidizer-state-tile" aria-expanded="false" aria-controls="spec-oxidizer-state"><span class="k">Oxidizer state</span><span class="v">0 &deg;C &middot; 1000 psia</span><span class="chev" aria-hidden="true"></span></button>
+  <div class="spec-tree__panel" id="spec-oxidizer-state" role="region" aria-labelledby="spec-oxidizer-state-tile" hidden>
+    <div class="spec-tree__tree">
+      <div class="spec-tree__root"><div class="k">Oxidizer state</div><div class="v">0 &deg;C &middot; 1000 psia</div><p>Chilled and supercharged so it stays a pure liquid.</p></div>
+      <ol class="spec-tree__branches" aria-label="Design decisions">
+        <li><span class="spec-num">01</span><div><h3>Supercharged well above saturation</h3><p>At 0 &deg;C nitrous sits at 523 psia. Pressurizing to 1000 psia adds 477 psi of margin, so it flows as a single-phase liquid and only flashes at the injector.</p></div></li>
+        <li><span class="spec-num">02</span><div><h3>Regulated nitrogen pressurant</h3><p>Nitrogen stored at 4500 psia is regulated down to hold the tank at 1000 psia, so thrust depends on throttle position alone and doesn&rsquo;t fade as the tank empties.</p></div></li>
+        <li><span class="spec-num">03</span><div><h3>Colder means denser</h3><p>Nitrous is about 9% denser at 0 &deg;C (930 vs. 852 kg/m&sup3;), stretching the burn from 40 s to 43.4 s from the same tank.</p></div></li>
+        <li><span class="spec-num">04</span><div><h3>Insulated to hold temperature</h3><p>One inch of insulation and white paint keep warming under 5 &deg;C on a 100 &deg;F desert day.</p></div></li>
+      </ol>
+    </div>
+    <div class="spec-tree__ruled"><p>Considered and ruled out</p><ul>
+      <li><b>Self-pressurized blowdown</b><span>two-phase flow, instability, and thrust that fades as the tank empties</span></li>
+    </ul></div>
+  </div>
+  <!-- Throttle -->
+  <button class="spec-tree__tile" type="button" id="spec-throttle-tile" aria-expanded="false" aria-controls="spec-throttle"><span class="k">Throttle</span><span class="v">Dual VACV</span><span class="chev" aria-hidden="true"></span></button>
+  <div class="spec-tree__panel" id="spec-throttle" role="region" aria-labelledby="spec-throttle-tile" hidden>
+    <div class="spec-tree__tree">
+      <div class="spec-tree__root"><div class="k">Throttle</div><div class="v">Dual VACV</div><p>A variable-area cavitating venturi on each propellant line.</p></div>
+      <ol class="spec-tree__branches" aria-label="Design decisions">
+        <li><span class="spec-num">01</span><div><h3>Isolated from the chamber</h3><p>While the venturi is cavitating, flow is set by upstream pressure and pintle stroke, not chamber pressure, so combustion oscillations can&rsquo;t feed back into the plumbing.</p></div></li>
+        <li><span class="spec-num">02</span><div><h3>Nearly linear response</h3><p>With a shallow pintle angle, mass flow tracks stroke almost linearly, giving the controller a simple, repeatable command-to-flow law.</p></div></li>
+        <li><span class="spec-num">03</span><div><h3>One valve per propellant</h3><p>Separate valves on the oxidizer and fuel lines allow independent mixture-ratio control, so the team can correct for anything off-nominal found in testing.</p></div></li>
+      </ol>
+    </div>
+    <div class="spec-tree__ruled"><p>Considered and ruled out</p><ul>
+      <li><b>Servo ball or butterfly valves</b><span>nonlinear, with stiction and hysteresis</span></li>
+      <li><b>Needle or globe valves</b><span>sensitive to debris and flashing</span></li>
+      <li><b>Feed-pressure throttling</b><span>couples into mixture ratio</span></li>
+      <li><b>PWM solenoids</b><span>can excite feed and chamber acoustics</span></li>
+      <li><b>Variable-area pintle injector</b><span>locks the mixture ratio</span></li>
+    </ul></div>
+  </div>
+  <!-- Injector -->
+  <button class="spec-tree__tile" type="button" id="spec-injector-tile" aria-expanded="false" aria-controls="spec-injector"><span class="k">Injector</span><span class="v">Pintle</span><span class="chev" aria-hidden="true"></span></button>
+  <div class="spec-tree__panel" id="spec-injector" role="region" aria-labelledby="spec-injector-tile" hidden>
+    <div class="spec-tree__tree">
+      <div class="spec-tree__root"><div class="k">Injector</div><div class="v">Pintle</div><p>A stable spray across the whole throttle range.</p></div>
+      <ol class="spec-tree__branches" aria-label="Design decisions">
+        <li><span class="spec-num">01</span><div><h3>Built for throttling</h3><p>A pintle&rsquo;s spray stays stable across a wide range of flow rates and doesn&rsquo;t rely on precisely aligned impinging jets.</p></div></li>
+        <li><span class="spec-num">02</span><div><h3>Nitrous inside, fuel outside</h3><p>N<sub>2</sub>O exits radially through 32 holes of 1.0 mm in a 14 mm pintle into a sheet of IPA. That puts the difficult two-phase flow where published test data applies.</p></div></li>
+        <li><span class="spec-num">03</span><div><h3>Three variants, then choose</h3><p>Three pintle geometries will be cold-flowed with real nitrous, and the one that best hits the target flow rates moves on to hot fire.</p></div></li>
+      </ol>
+    </div>
+    <div class="spec-tree__ruled"><p>Considered and ruled out</p><ul>
+      <li><b>Doublet or triplet impinging injectors</b><span>need precise jet alignment</span></li>
+    </ul></div>
+  </div>
+  <!-- Engine -->
+  <button class="spec-tree__tile" type="button" id="spec-engine-tile" aria-expanded="false" aria-controls="spec-engine"><span class="k">Engine</span><span class="v">Copper &rarr; regen</span><span class="chev" aria-hidden="true"></span></button>
+  <div class="spec-tree__panel" id="spec-engine" role="region" aria-labelledby="spec-engine-tile" hidden>
+    <div class="spec-tree__tree">
+      <div class="spec-tree__root"><div class="k">Engine</div><div class="v">Copper &rarr; regen</div><p>A heat-sink engine for testing, a regen engine for flight.</p></div>
+      <ol class="spec-tree__branches" aria-label="Design decisions">
+        <li><span class="spec-num">01</span><div><h3>Start with a copper heat-sink engine</h3><p>Copper pulls heat away from the throat quickly, and its inserts can be swapped between tests. It proves out the feed system and models before committing to expensive hardware.</p></div></li>
+        <li><span class="spec-num">02</span><div><h3>Regeneratively cooled for flight</h3><p>A 40-second burn is too long for a heat-sink engine, so the flight engine runs propellant through cooling channels in the chamber wall.</p></div></li>
+        <li><span class="spec-num">03</span><div><h3>3D-printed Inconel 718</h3><p>Walls are expected near 800 &deg;C, where creep begins. Inconel 718 resists it, additive manufacturing builds the channels into the wall, and spare IPA is carried for film cooling.</p></div></li>
+        <li><span class="spec-num">04</span><div><h3>Compact chamber</h3><p>78 mm chamber, 31.8 mm throat, and 288 mm long overall, with a characteristic length of 1.0 m.</p></div></li>
+      </ol>
+    </div>
+    <div class="spec-tree__ruled"><p>Considered and ruled out</p><ul>
+      <li><b>Heat-sink engine for flight</b><span>can&rsquo;t survive a 40 s burn</span></li>
+    </ul></div>
+  </div>
+  <!-- Ignition -->
+  <button class="spec-tree__tile" type="button" id="spec-ignition-tile" aria-expanded="false" aria-controls="spec-ignition"><span class="k">Ignition</span><span class="v">Torch igniter</span><span class="chev" aria-hidden="true"></span></button>
+  <div class="spec-tree__panel" id="spec-ignition" role="region" aria-labelledby="spec-ignition-tile" hidden>
+    <div class="spec-tree__tree">
+      <div class="spec-tree__root"><div class="k">Ignition</div><div class="v">Torch igniter</div><p>A gaseous hydrogen&ndash;oxygen flame lights the engine.</p></div>
+      <ol class="spec-tree__branches" aria-label="Design decisions">
+        <li><span class="spec-num">01</span><div><h3>A sustained flame, not a one-shot charge</h3><p>The torch keeps burning through startup, so a timing miss doesn&rsquo;t scrub the run. It&rsquo;s reusable and can be tuned between tests.</p></div></li>
+        <li><span class="spec-num">02</span><div><h3>Gaseous hydrogen and oxygen</h3><p>Both are already gases, so the igniter avoids conditioning cold liquid nitrous and atomizing alcohol inside a tiny chamber.</p></div></li>
+      </ol>
+    </div>
+    <div class="spec-tree__ruled"><p>Considered and ruled out</p><ul>
+      <li><b>APCP pucks</b><span>unreliable and made in-house</span></li>
+      <li><b>Black-powder cartridges</b><span>burn about 1 s, so timing is critical</span></li>
+    </ul></div>
+  </div>
+  <!-- Status -->
+  <button class="spec-tree__tile" type="button" id="spec-status-tile" aria-expanded="false" aria-controls="spec-status"><span class="k">Status</span><span class="v">Preliminary design</span><span class="chev" aria-hidden="true"></span></button>
+  <div class="spec-tree__panel" id="spec-status" role="region" aria-labelledby="spec-status-tile" hidden>
+    <div class="spec-tree__tree">
+      <div class="spec-tree__root"><div class="k">Status</div><div class="v">Preliminary design</div><p>Design review done, hardware testing next.</p></div>
+      <ol class="spec-tree__branches" aria-label="Milestones">
+        <li><span class="spec-num">01</span><div><h3>Preliminary Design Review</h3><p>The fluid system design is documented in the team&rsquo;s PDR, v1.1, October 2026.</p></div></li>
+        <li><span class="spec-num">02</span><div><h3>Next: bench-test the valves</h3><p>Valves are validated on the bench, then a regulator test station and the remote pressure regulator are built and tested.</p></div></li>
+        <li><span class="spec-num">03</span><div><h3>Then tanks, cold flow, and hot fire</h3><p>The IPA and N<sub>2</sub>O tanks are tested, nitrous ground support equipment is prepared, the injector is cold-flowed, and the copper engine is hot-fired.</p></div></li>
+      </ol>
+    </div>
+  </div>
+</div>
+</template>
+
+<!--
+  Copy of the Leadership block in halo.html; the leadership editor starts from this.
+  Two teams, Mechanical (drawn on the left) and Avionics (right). Each has one head.
+  A head or lead can have "members" (names only, listed under them) and "leads" (the next row down, with headshots).
+  Every field but name is optional: title, photo (a path like images/headshots/Name.jpg), email, phone, linkedin.
+-->
+<script type="application/json" id="halo-leadership-data">
+{
+  "teams": [
+    {
+      "name": "Mechanical",
+      "head": {
+        "name": "Casey Strattan",
+        "title": "Halo Chief Engineer, Mechanical",
+        "email": "strattan@ucsb.edu",
+        "linkedin": "https://www.linkedin.com/in/john-casey-strattan/",
+        "leads": [
+          {
+            "name": "Lead name",
+            "title": "Propulsion Lead",
+            "members": [
+              { "name": "Member name" },
+              { "name": "Member name" },
+              { "name": "Member name" }
+            ]
+          },
+          {
+            "name": "Lead name",
+            "title": "Structures Lead",
+            "members": [
+              { "name": "Member name" },
+              { "name": "Member name" },
+              { "name": "Member name" }
+            ]
+          },
+          {
+            "name": "Lead name",
+            "title": "Fluid Systems Lead",
+            "members": [
+              { "name": "Member name" },
+              { "name": "Member name" }
+            ]
+          },
+          {
+            "name": "Lead name",
+            "title": "Ground Support Lead",
+            "members": [
+              { "name": "Member name" },
+              { "name": "Member name" }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "Avionics",
+      "head": {
+        "name": "Mark Adipietro",
+        "title": "Halo Chief Engineer, Avionics",
+        "photo": "images/headshots/MarkAdipietro.jpg",
+        "email": "MarkAdipietro@ucsb.edu",
+        "linkedin": "https://www.linkedin.com/in/mark-adipietro/",
+        "leads": [
+          {
+            "name": "Lead name",
+            "title": "Flight Software Lead",
+            "members": [
+              { "name": "Member name" },
+              { "name": "Member name" },
+              { "name": "Member name" }
+            ]
+          },
+          {
+            "name": "Lead name",
+            "title": "Electrical Lead",
+            "members": [
+              { "name": "Member name" },
+              { "name": "Member name" },
+              { "name": "Member name" }
+            ]
+          },
+          {
+            "name": "Lead name",
+            "title": "Guidance & Control Lead",
+            "members": [
+              { "name": "Member name" },
+              { "name": "Member name" }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
+</script>
+
+<script src="timeline.js"></script>
+<script src="leadership.js"></script>
+<script>
+/* Editor for the timeline (this preview page only). The timeline itself comes from timeline.js, same as halo.html. */
+(function () {
+  var H = window.HaloTimeline, TYPES = H.TYPES, parseDate = H.parseDate, entry = H.entry;
+  var KEY = 'halo-timeline-draft-v1';
+  var src = document.getElementById('halo-timeline-data');
+  var model = null, status = document.querySelector('.ed__status');
+  try {
+    var saved = JSON.parse(localStorage.getItem(KEY) || 'null');
+    var savedEntries = Array.isArray(saved) ? saved : (saved && Array.isArray(saved.entries) ? saved.entries : null);
+    if (savedEntries) {
+      model = savedEntries.map(entry);
+      status.textContent = 'Loaded your saved edits from this browser. Reset goes back to the file.';
+    }
+  } catch (e) {}
+  if (!model) model = H.readModel(src);
+
+  // entries are kept in order of their main date (an entry whose date isn't valid yet goes to the end)
+  function dateKey(e) { var p = parseDate(e.date); return p ? p.date.getTime() : Infinity; }
+  function sortEntries() {
+    var before = model.map(function (e) { return e.id; }).join();
+    model.sort(function (a, b) { var d = dateKey(a) - dateKey(b); return d === d ? d : 0; });
+    return model.map(function (e) { return e.id; }).join() !== before;
+  }
+  sortEntries();
+  var indexOf = function (id) { for (var i = 0; i < model.length; i++) if (model[i].id === id) return i; return -1; };
+
+  function save() {
+    try {
+      localStorage.setItem(KEY, JSON.stringify({ entries: model.map(function (e) { return { date: e.date, type: e.type, team: e.team, title: e.title, body: e.body, subs: e.subs }; }) }));
+      status.textContent = 'Saved in this browser.';
+    } catch (e) { status.textContent = 'Could not save in this browser; use Copy HTML to keep your edits.'; }
+  }
+
+  var ed = document.getElementById('editor'), table = ed.querySelector('.ed__table'), out = ed.querySelector('.ed__out textarea'), count = ed.querySelector('.ed__count');
+  var tl = H.mount(document.querySelector('.tlA'), function () { return H.toItems(model); }, function (id) {
+    markActive(id);
+    // scroll the editor to the entry that was opened on the timeline
+    var tb = id == null ? null : table.querySelector('.ed__entry[data-id="' + id + '"]');
+    if (tb) ed.scrollTo({ top: tb.offsetTop - 110, behavior: 'smooth' });
+  }, { spacing: H.DEFAULT_SPACING });
+
+  var attr = function (s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); };
+  var typeOptions = function (sel) { return Object.keys(TYPES).map(function (k) { return '<option value="' + k + '"' + (k === sel ? ' selected' : '') + '>' + TYPES[k] + '</option>'; }).join(''); };
+  function renderEditor() {
+    table.innerHTML = '<colgroup><col style="width:7.2rem"><col style="width:8.6rem"><col><col style="width:2.6rem"></colgroup>' +
+      '<thead><tr><th>Date</th><th>Type</th><th>Title</th><th></th></tr></thead>' +
+      model.map(function (e, i) {
+        return '<tbody class="ed__entry" data-i="' + i + '" data-id="' + e.id + '">' +
+          '<tr><td><input data-f="date" value="' + attr(e.date) + '" placeholder="YYYY-MM" aria-label="Entry date"></td>' +
+          '<td><select data-f="type" aria-label="Type">' + typeOptions(e.type) + '</select></td>' +
+          '<td><input data-f="title" value="' + attr(e.title) + '" aria-label="Title"></td>' +
+          '<td><button type="button" class="ed__x" data-act="del" title="Delete this entry" aria-label="Delete entry">&times;</button></td></tr>' +
+          '<tr><td colspan="4"><textarea data-f="body" rows="2" aria-label="Description">' + attr(e.body) + '</textarea></td></tr>' +
+          '<tr><td colspan="4" class="ed__stepcell"><table class="ed__steps"><colgroup><col style="width:7.2rem"><col><col style="width:2.2rem"></colgroup><tbody>' +
+            (e.subs.length ? '' : '<tr><td colspan="3" class="ed__nosteps">No steps</td></tr>') +
+            e.subs.map(function (s, j) {
+              return '<tr data-j="' + j + '"><td><input data-sf="date" value="' + attr(s.date) + '" placeholder="YYYY-MM-DD" aria-label="Step date"></td>' +
+                '<td><input data-sf="text" value="' + attr(s.text) + '" aria-label="Step text"></td>' +
+                '<td><button type="button" class="ed__x" data-act="delstep" title="Delete this step" aria-label="Delete step">&times;</button></td></tr>';
+            }).join('') +
+          '</tbody></table><button type="button" class="ed__add" data-act="addstep">+ Step</button></td></tr></tbody>';
+      }).join('');
+    table.querySelectorAll('[data-f="date"], [data-sf="date"]').forEach(function (inp) { inp.classList.toggle('is-bad', !parseDate(inp.value)); });
+    refreshOutput();
+  }
+  function refreshOutput() {
+    var steps = model.reduce(function (n, e) { return n + e.subs.length; }, 0);
+    count.textContent = model.length + ' entries · ' + steps + ' steps';
+    out.value = H.toHTML(model);
+  }
+  function markActive(id) {
+    table.querySelectorAll('.ed__entry').forEach(function (tb) { tb.classList.toggle('is-active', +tb.getAttribute('data-id') === id); });
+  }
+  var pending;
+  function changed(now) {
+    save(); refreshOutput();
+    clearTimeout(pending);
+    pending = setTimeout(function () { tl.rebuild(); }, now ? 0 : 150);
+  }
+
+  table.addEventListener('input', function (e) {
+    var t = e.target, tb = t.closest('.ed__entry');
+    if (!tb) return;
+    var en = model[+tb.getAttribute('data-i')];
+    if (t.hasAttribute('data-f')) en[t.getAttribute('data-f')] = t.value;
+    else if (t.hasAttribute('data-sf')) en.subs[+t.closest('tr').getAttribute('data-j')][t.getAttribute('data-sf')] = t.value;
+    if (/date/.test(t.getAttribute('data-f') || t.getAttribute('data-sf') || '')) t.classList.toggle('is-bad', !parseDate(t.value));
+    changed(false);
+  });
+
+  // When you finish editing an entry's date (click elsewhere, Tab or Enter), the entry moves into date order.
+  // The move waits until the click or key is done, so it never pulls a button out from under you.
+  var pendingSort = null;
+  table.addEventListener('change', function (e) {
+    if (e.target.getAttribute('data-f') === 'date' && parseDate(e.target.value)) pendingSort = +e.target.closest('.ed__entry').getAttribute('data-id');
+  });
+  function flushSort() {
+    if (pendingSort == null) return;
+    var id = pendingSort; pendingSort = null;
+    if (!sortEntries()) return;
+    // remember where the cursor is so it survives the redraw
+    var a = document.activeElement, keep = null;
+    if (a && table.contains(a) && a.closest('.ed__entry')) {
+      var tr = a.closest('tr[data-j]');
+      keep = { id: a.closest('.ed__entry').getAttribute('data-id'), s: a.selectionStart, e: a.selectionEnd,
+               sel: a.hasAttribute('data-f') ? '[data-f="' + a.getAttribute('data-f') + '"]'
+                  : (a.hasAttribute('data-sf') && tr ? 'tr[data-j="' + tr.getAttribute('data-j') + '"] [data-sf="' + a.getAttribute('data-sf') + '"]' : null) };
+    }
+    renderEditor(); save();
+    if (keep && keep.sel) {
+      var f = table.querySelector('.ed__entry[data-id="' + keep.id + '"] ' + keep.sel);
+      if (f) { f.focus({ preventScroll: true }); try { f.setSelectionRange(keep.s, keep.e); } catch (err) {} }
+    }
+    var moved = table.querySelector('.ed__entry[data-id="' + id + '"]');
+    if (moved) {
+      moved.classList.add('is-moved');
+      setTimeout(function () { moved.classList.remove('is-moved'); }, 1400);
+      ed.scrollTo({ top: moved.offsetTop - 110, behavior: 'smooth' });
+    }
+  }
+  document.addEventListener('click', function () { setTimeout(flushSort, 0); });
+  document.addEventListener('keyup', function (e) { if (e.key === 'Enter' || e.key === 'Tab') setTimeout(flushSort, 0); });
+
+  // editing an entry opens it on the timeline so you can see where its dots land
+  table.addEventListener('focusin', function (e) {
+    var tb = e.target.closest('.ed__entry');
+    if (!tb) return;
+    var id = +tb.getAttribute('data-id');
+    markActive(id);
+    tl.openById(id);
+  });
+
+  // only the Timeline tab's buttons (the other tabs have their own Copy, Reset and + buttons)
+  ed.querySelector('[data-panel="timeline"]').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act]');
+    if (!b) return;
+    var act = b.getAttribute('data-act'), tb = b.closest('.ed__entry'), id = tb ? +tb.getAttribute('data-id') : null;
+    var stepRow = b.closest('tr[data-j]'), j = stepRow ? +stepRow.getAttribute('data-j') : -1;
+    flushSort(); // finish any pending re-order first; entries are found by id below, so this is safe
+    var i = id == null ? -1 : indexOf(id), focusSel = null;
+    if (act === 'add') {
+      var d = new Date(H.nowT());
+      var en = entry({ date: d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'), type: 'design', title: 'New entry', body: 'Add a sentence.' });
+      model.push(en); sortEntries();
+      focusSel = '.ed__entry[data-id="' + en.id + '"] [data-f="title"]';
+    } else if (act === 'del') {
+      if (i < 0 || !confirm('Delete "' + (model[i].title.replace(/<[^>]+>/g, '') || 'this entry') + '" and its steps?')) return;
+      model.splice(i, 1);
+    } else if (act === 'addstep') {
+      if (i < 0) return;
+      model[i].subs.push({ date: model[i].date, text: 'New step' });
+      focusSel = '.ed__entry[data-id="' + id + '"] tr[data-j="' + (model[i].subs.length - 1) + '"] [data-sf="text"]';
+    } else if (act === 'delstep') {
+      if (i < 0 || j < 0) return;
+      model[i].subs.splice(j, 1);
+    } else if (act === 'sort') {
+      model.forEach(function (en) { en.subs.sort(function (a, b) { var x = dateKey(a) - dateKey(b); return x === x ? x : 0; }); });
+    } else if (act === 'copy') {
+      var html = H.toHTML(model);
+      var done = function () { status.textContent = 'Copied. Paste it over the <ol class="htl-data"> list in halo.html.'; };
+      if (navigator.clipboard) navigator.clipboard.writeText(html).then(done, function () { out.select(); document.execCommand('copy'); done(); });
+      else { ed.querySelector('.ed__out').open = true; out.select(); document.execCommand('copy'); done(); }
+      return;
+    } else if (act === 'reset') {
+      if (!confirm('Discard your edits and go back to the entries in the file?')) return;
+      try { localStorage.removeItem(KEY); } catch (err) {}
+      model = H.readModel(src); sortEntries();
+      renderEditor(); tl.rebuild();
+      status.textContent = 'Back to the entries in the file.';
+      return;
+    } else return;
+    renderEditor();
+    changed(true);
+    if (focusSel) { var f = table.querySelector(focusSel); if (f) { f.focus(); f.select(); } }
+  });
+  document.getElementById('ed-toggle').addEventListener('click', function () {
+    var off = document.body.classList.toggle('ed-off');
+    this.textContent = off ? 'Show editor' : 'Hide editor';
+    H.redraw();
+  });
+  renderEditor();
+})();
+</script>
+<script>
+/* Editor for the Specifications block (this preview page only). It reads the copy of halo.html's
+   spec block in <template id="halo-specs-data">, redraws the block above as you type, and
+   Copy HTML gives back markup to paste over the <div class="spec-tree"> block in halo.html. */
+(function () {
+  var KEY = 'halo-specs-draft-v1';
+  var aside = document.getElementById('editor'), ed = aside.querySelector('[data-panel="specs"]');
+  var table = ed.querySelector('.ed__table'), out = ed.querySelector('.ed__out textarea'), count = ed.querySelector('.ed__count'), status = ed.querySelector('.ed__status');
+  var view = document.getElementById('spec-preview'), tpl = document.getElementById('halo-specs-data');
+  var plain = function (html) { var d = document.createElement('div'); d.innerHTML = html; return d.textContent.trim(); };
+  var attr = function (s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); };
+
+  /* ---- read the spec block markup into a simple list ---- */
+  function readSpecs(rootEl) {
+    return Array.prototype.map.call(rootEl.querySelectorAll('.spec-tree__tile'), function (tile) {
+      var panel = tile.nextElementSibling, rootP = panel.querySelector('.spec-tree__root p'), ol = panel.querySelector('.spec-tree__branches');
+      return {
+        k: tile.querySelector('.k').innerHTML.trim(), v: tile.querySelector('.v').innerHTML.trim(), t: rootP ? rootP.innerHTML.trim() : '',
+        label: (ol && ol.getAttribute('aria-label')) || 'Design decisions',
+        d: ol ? Array.prototype.map.call(ol.querySelectorAll(':scope > li'), function (li) {
+          var h = li.querySelector('h3'), p = li.querySelector('p');
+          return { h: h ? h.innerHTML.trim() : '', p: p ? p.innerHTML.trim() : '' };
+        }) : [],
+        x: Array.prototype.map.call(panel.querySelectorAll('.spec-tree__ruled li'), function (li) {
+          var b = li.querySelector('b'), sp = li.querySelector('span');
+          return { n: b ? b.innerHTML.trim() : '', r: sp ? sp.innerHTML.trim() : '' };
+        })
+      };
+    });
+  }
+  function clean(o) {
+    return { k: o.k || '', v: o.v || '', t: o.t || '', label: o.label || 'Design decisions',
+      d: (o.d || []).map(function (x) { return { h: x.h || '', p: x.p || '' }; }),
+      x: (o.x || []).map(function (x) { return { n: x.n || '', r: x.r || '' }; }) };
+  }
+
+  /* ---- write it back out in the same shape as halo.html ---- */
+  function idsFor(specs) {
+    var used = {};
+    return specs.map(function (sp) {
+      var base = 'spec-' + (plain(sp.k).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'item'), id = base, n = 2;
+      while (used[id]) id = base + '-' + n++;
+      used[id] = 1; return id;
+    });
+  }
+  function specsInner(specs, pad) {
+    var ids = idsFor(specs), q = function (s) { return String(s).replace(/"/g, '&quot;'); };
+    return specs.map(function (sp, i) {
+      var id = ids[i], P = pad;
+      var dec = sp.d.map(function (d, j) {
+        return P + '      <li><span class="spec-num">' + String(j + 1).padStart(2, '0') + '</span><div><h3>' + d.h + '</h3><p>' + d.p + '</p></div></li>';
+      }).join('\n');
+      var ruled = sp.x.length ? '\n' + P + '  <div class="spec-tree__ruled"><p>Considered and ruled out</p><ul>\n' +
+        sp.x.map(function (x) { return P + '    <li><b>' + x.n + '</b><span>' + x.r + '</span></li>'; }).join('\n') + '\n' + P + '  </ul></div>' : '';
+      return P + '<!-- ' + (plain(sp.k).replace(/--+/g, '-') || 'Spec') + ' -->\n' +
+        P + '<button class="spec-tree__tile" type="button" id="' + id + '-tile" aria-expanded="false" aria-controls="' + id + '"><span class="k">' + sp.k + '</span><span class="v">' + sp.v + '</span><span class="chev" aria-hidden="true"></span></button>\n' +
+        P + '<div class="spec-tree__panel" id="' + id + '" role="region" aria-labelledby="' + id + '-tile" hidden>\n' +
+        P + '  <div class="spec-tree__tree">\n' +
+        P + '    <div class="spec-tree__root"><div class="k">' + sp.k + '</div><div class="v">' + sp.v + '</div><p>' + sp.t + '</p></div>\n' +
+        P + '    <ol class="spec-tree__branches" aria-label="' + q(sp.label) + '">\n' + dec + (dec ? '\n' : '') +
+        P + '    </ol>\n' +
+        P + '  </div>' + ruled + '\n' +
+        P + '</div>';
+    }).join('\n');
+  }
+  // write typographic characters back as the named entities halo.html uses, so pasting doesn't churn the file
+  var ENT = { '\u2019': '&rsquo;', '\u2018': '&lsquo;', '\u201c': '&ldquo;', '\u201d': '&rdquo;', '\u2013': '&ndash;', '\u2014': '&mdash;',
+              '\u00b0': '&deg;', '\u00b7': '&middot;', '\u2192': '&rarr;', '\u00d7': '&times;', '\u00b3': '&sup3;', '\u00b2': '&sup2;', '\u00a0': '&nbsp;' };
+  var ent = function (html) { return html.replace(/[\u2019\u2018\u201c\u201d\u2013\u2014\u00b0\u00b7\u2192\u00d7\u00b3\u00b2\u00a0]/g, function (c) { return ENT[c]; }); };
+  function toSpecHTML(specs) {
+    return ent('<!-- Specs: each button opens the panel right after it. To edit, change the text below; keep each button\'s aria-controls equal to its panel\'s id. -->\n' +
+      '<div class="spec-tree">\n' + specsInner(specs, '  ') + '\n</div>');
+  }
+
+  /* ---- data: saved draft, else the copy of halo.html's block ---- */
+  var specs = null;
+  try {
+    var saved = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (saved && Array.isArray(saved.specs)) { specs = saved.specs.map(clean); status.textContent = 'Loaded your saved edits from this browser. Reset goes back to the file.'; }
+  } catch (e) {}
+  if (!specs) specs = readSpecs(tpl.content);
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify({ specs: specs })); status.textContent = 'Saved in this browser.'; }
+    catch (e) { status.textContent = 'Could not save in this browser; use Copy HTML to keep your edits.'; }
+  }
+
+  /* ---- the live block above: same behaviour as halo.html (one panel open; Escape closes) ---- */
+  var openIdx = -1;
+  function renderView() {
+    view.innerHTML = specsInner(specs, '');
+    if (openIdx >= specs.length) openIdx = -1;
+    applyOpen();
+  }
+  function applyOpen() {
+    view.querySelectorAll('.spec-tree__tile').forEach(function (t, i) {
+      t.setAttribute('aria-expanded', i === openIdx);
+      t.nextElementSibling.hidden = i !== openIdx;
+    });
+  }
+  view.addEventListener('click', function (e) {
+    var t = e.target.closest('.spec-tree__tile');
+    if (!t) return;
+    var i = Array.prototype.indexOf.call(view.querySelectorAll('.spec-tree__tile'), t);
+    openIdx = openIdx === i ? -1 : i;
+    applyOpen(); markActive();
+  });
+  view.addEventListener('keydown', function (e) { if (e.key === 'Escape' && openIdx > -1) { var t = view.querySelectorAll('.spec-tree__tile')[openIdx]; openIdx = -1; applyOpen(); markActive(); t.focus(); } });
+
+  /* ---- the editor table ---- */
+  function renderEditor() {
+    table.innerHTML = '<colgroup><col style="width:38%"><col><col style="width:5.4rem"></colgroup>' +
+      '<thead><tr><th>Name</th><th>Value</th><th></th></tr></thead>' +
+      specs.map(function (sp, i) {
+        return '<tbody class="ed__entry" data-i="' + i + '">' +
+          '<tr><td><input data-f="k" value="' + attr(sp.k) + '" aria-label="Spec name"></td>' +
+          '<td><input data-f="v" value="' + attr(sp.v) + '" aria-label="Value"></td>' +
+          '<td><div class="ed__btns"><button type="button" data-act="up" title="Move up" aria-label="Move up"' + (i ? '' : ' disabled') + '>&uarr;</button>' +
+            '<button type="button" data-act="down" title="Move down" aria-label="Move down"' + (i < specs.length - 1 ? '' : ' disabled') + '>&darr;</button>' +
+            '<button type="button" data-act="del" title="Delete this spec" aria-label="Delete spec">&times;</button></div></td></tr>' +
+          '<tr><td colspan="3"><input data-f="t" value="' + attr(sp.t) + '" placeholder="One-line summary" aria-label="Summary"></td></tr>' +
+          '<tr><td colspan="3" class="ed__stepcell"><div class="ed__sublabel">' + attr(sp.label) + '</div><table class="ed__steps"><colgroup><col><col style="width:2.2rem"></colgroup><tbody>' +
+            (sp.d.length ? '' : '<tr><td colspan="2" class="ed__nosteps">None</td></tr>') +
+            sp.d.map(function (d, j) {
+              return '<tr data-j="' + j + '"><td><input data-df="h" value="' + attr(d.h) + '" aria-label="Decision title"></td>' +
+                '<td rowspan="2"><button type="button" class="ed__x" data-act="deld" title="Delete" aria-label="Delete decision">&times;</button></td></tr>' +
+                '<tr data-j="' + j + '"><td><textarea data-df="p" rows="2" aria-label="Decision text">' + attr(d.p) + '</textarea></td></tr>';
+            }).join('') +
+          '</tbody></table><button type="button" class="ed__add" data-act="addd">+ Decision</button></td></tr>' +
+          '<tr><td colspan="3" class="ed__stepcell"><div class="ed__sublabel">Considered and ruled out</div><table class="ed__steps"><colgroup><col style="width:42%"><col><col style="width:2.2rem"></colgroup><tbody>' +
+            (sp.x.length ? '' : '<tr><td colspan="3" class="ed__nosteps">None</td></tr>') +
+            sp.x.map(function (x, j) {
+              return '<tr data-j="' + j + '"><td><input data-xf="n" value="' + attr(x.n) + '" aria-label="Option"></td>' +
+                '<td><input data-xf="r" value="' + attr(x.r) + '" aria-label="Why it was ruled out"></td>' +
+                '<td><button type="button" class="ed__x" data-act="delx" title="Delete" aria-label="Delete option">&times;</button></td></tr>';
+            }).join('') +
+          '</tbody></table><button type="button" class="ed__add" data-act="addx">+ Ruled out</button></td></tr></tbody>';
+      }).join('');
+    refreshOutput(); markActive();
+  }
+  function refreshOutput() {
+    var n = specs.reduce(function (a, sp) { return a + sp.d.length; }, 0);
+    count.textContent = specs.length + ' specs · ' + n + ' decisions';
+    out.value = toSpecHTML(specs);
+  }
+  function markActive() {
+    table.querySelectorAll('.ed__entry').forEach(function (tb) { tb.classList.toggle('is-active', +tb.getAttribute('data-i') === openIdx); });
+  }
+  var pending;
+  function changed(now) {
+    save(); refreshOutput();
+    clearTimeout(pending);
+    pending = setTimeout(renderView, now ? 0 : 150);
+  }
+
+  table.addEventListener('input', function (e) {
+    var t = e.target, tb = t.closest('.ed__entry');
+    if (!tb) return;
+    var sp = specs[+tb.getAttribute('data-i')], row = t.closest('[data-j]');
+    if (t.hasAttribute('data-f')) sp[t.getAttribute('data-f')] = t.value;
+    else if (t.hasAttribute('data-df')) sp.d[+row.getAttribute('data-j')][t.getAttribute('data-df')] = t.value;
+    else if (t.hasAttribute('data-xf')) sp.x[+row.getAttribute('data-j')][t.getAttribute('data-xf')] = t.value;
+    changed(false);
+  });
+  // editing a spec opens its panel above so you can see the result
+  table.addEventListener('focusin', function (e) {
+    var tb = e.target.closest('.ed__entry');
+    if (!tb) return;
+    var i = +tb.getAttribute('data-i');
+    if (i !== openIdx) { openIdx = i; applyOpen(); markActive(); }
+  });
+  ed.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act]');
+    if (!b) return;
+    var act = b.getAttribute('data-act'), tb = b.closest('.ed__entry'), i = tb ? +tb.getAttribute('data-i') : -1;
+    var row = b.closest('[data-j]'), j = row ? +row.getAttribute('data-j') : -1, focusSel = null;
+    if (act === 'add') {
+      specs.push({ k: 'New spec', v: 'Value', t: 'Add a one-line summary.', label: 'Design decisions', d: [{ h: 'Decision', p: 'Add a sentence.' }], x: [] });
+      openIdx = specs.length - 1;
+      focusSel = '.ed__entry[data-i="' + openIdx + '"] [data-f="k"]';
+    } else if (act === 'del') {
+      if (!confirm('Delete the "' + (plain(specs[i].k) || 'this') + '" spec?')) return;
+      specs.splice(i, 1); openIdx = -1;
+    } else if (act === 'up' || act === 'down') {
+      var to = act === 'up' ? i - 1 : i + 1;
+      if (to < 0 || to >= specs.length) return;
+      var tmp = specs[i]; specs[i] = specs[to]; specs[to] = tmp;
+      openIdx = to;
+      focusSel = '.ed__entry[data-i="' + to + '"] [data-act="' + act + '"]';
+    } else if (act === 'addd') {
+      specs[i].d.push({ h: 'New decision', p: 'Add a sentence.' });
+      focusSel = '.ed__entry[data-i="' + i + '"] tr[data-j="' + (specs[i].d.length - 1) + '"] [data-df="h"]';
+    } else if (act === 'deld') {
+      specs[i].d.splice(j, 1);
+    } else if (act === 'addx') {
+      specs[i].x.push({ n: 'Option', r: 'why it was ruled out' });
+      focusSel = '.ed__entry[data-i="' + i + '"] tr[data-j="' + (specs[i].x.length - 1) + '"] [data-xf="n"]';
+    } else if (act === 'delx') {
+      specs[i].x.splice(j, 1);
+    } else if (act === 'copy') {
+      var html = toSpecHTML(specs);
+      var done = function () { status.textContent = 'Copied. Paste it over the <div class="spec-tree"> block (and the comment above it) in halo.html.'; };
+      if (navigator.clipboard) navigator.clipboard.writeText(html).then(done, function () { out.select(); document.execCommand('copy'); done(); });
+      else { ed.querySelector('.ed__out').open = true; out.select(); document.execCommand('copy'); done(); }
+      return;
+    } else if (act === 'reset') {
+      if (!confirm('Discard your spec edits and go back to the block in the file?')) return;
+      try { localStorage.removeItem(KEY); } catch (err) {}
+      specs = readSpecs(tpl.content); openIdx = -1;
+      renderEditor(); renderView();
+      status.textContent = 'Back to the specs in the file.';
+      return;
+    } else return;
+    renderEditor();
+    changed(true);
+    if (focusSel) { var f = table.querySelector(focusSel); if (f) { f.focus(); if (f.select) f.select(); } }
+  });
+
+  /* ---- tabs: Timeline / Specifications ---- */
+  var tabs = aside.querySelectorAll('[data-tab]');
+  tabs.forEach(function (b) {
+    b.addEventListener('click', function () {
+      var name = b.getAttribute('data-tab');
+      tabs.forEach(function (x) { x.setAttribute('aria-selected', x === b); });
+      aside.querySelectorAll('[data-panel]').forEach(function (p) { p.hidden = p.getAttribute('data-panel') !== name; });
+      aside.scrollTop = 0;
+      var sec = document.getElementById(name);
+      if (sec) window.scrollTo({ top: sec.getBoundingClientRect().top + window.scrollY - 8, behavior: 'smooth' });
+    });
+  });
+
+  renderEditor(); renderView();
+})();
+</script>
+<script>
+/* Editor for the Leadership tree (this preview page only). The tree itself comes from leadership.js, same as halo.html.
+   It starts from the copy of halo.html's halo-leadership-data block above, redraws the tree as you type,
+   and Copy HTML gives back that block to paste over the one in halo.html. */
+(function () {
+  var L = window.HaloLeadership, KEY = 'halo-leadership-draft-v1';
+  var aside = document.getElementById('editor'), ed = aside.querySelector('[data-panel="leadership"]');
+  var box = ed.querySelector('.ld'), out = ed.querySelector('.ed__out textarea'), count = ed.querySelector('.ed__count'), status = ed.querySelector('.ed__status');
+  var src = document.getElementById('halo-leadership-data');
+  var attr = function (s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); };
+
+  var data = null;
+  try {
+    var saved = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (saved && Array.isArray(saved.teams)) { data = L.clean(saved); status.textContent = 'Loaded your saved edits from this browser. Reset goes back to the file.'; }
+  } catch (e) {}
+  if (!data) data = L.read(src);
+  function save() {
+    try { localStorage.setItem(KEY, L.toJSON(data)); status.textContent = 'Saved in this browser.'; }
+    catch (e) { status.textContent = 'Could not save in this browser; use Copy HTML to keep your edits.'; }
+  }
+
+  // entries: everyone in order (from leadership.js), rebuilt on every redraw of the editor
+  var entries = [], byP = new Map(), activeP = null, openP = new Set();
+  var tree = L.mount(document.getElementById('leadership-preview'), function () { return data; }, {
+    onOpen: function (id, e) { setActive(e.p, true); } // opening someone's card in the tree finds them in the editor
+  });
+
+  var LEVEL = ['Chief', 'Lead', 'Sub-lead'];
+  var level = function (e) { return e.kind === 'member' ? 'Member' : LEVEL[Math.min(e.depth, 2)]; };
+  var under = function (p) { return p.members.length + p.leads.reduce(function (n, l) { return n + 1 + under(l); }, 0); };
+
+  // anyone this person could report to: a chief or lead on either team, but not themselves or anyone under them
+  function leaderOptions(e) {
+    var banned = new Set();
+    if (e.kind === 'leader') (function ban(p) { banned.add(p); p.leads.forEach(ban); })(e.p);
+    return data.teams.map(function (t, ti) {
+      return '<optgroup label="' + attr(t.name || 'Team') + '">' + entries.filter(function (x) { return x.team === ti && x.kind === 'leader' && !banned.has(x.p); }).map(function (x) {
+        return '<option value="' + x.id + '"' + (x.p === e.parent ? ' selected' : '') + '>' + attr((x.p.name || 'Unnamed') + (x.p.title ? ' · ' + x.p.title : '')) + '</option>';
+      }).join('') + '</optgroup>';
+    }).join('');
+  }
+
+  function personHTML(e) {
+    var p = e.p, mem = e.kind === 'member', lv = level(e), isOpen = openP.has(p);
+    var i = e.arr ? e.arr.indexOf(p) : 0, n = e.arr ? e.arr.length : 1;
+    var field = function (f, label, ph, wide) {
+      return '<label' + (wide ? ' class="wide"' : '') + '><span>' + label + '</span><input data-f="' + f + '" value="' + attr(p[f]) + '" placeholder="' + attr(ph) + '"></label>';
+    };
+    var h = '<div class="ld__row"><span class="ld__lvl">' + lv + '</span>' +
+      '<input data-f="name" value="' + attr(p.name) + '" placeholder="Name" aria-label="' + lv + ' name">' +
+      (mem ? '' : '<input data-f="title" value="' + attr(p.title) + '" placeholder="Title" aria-label="' + lv + ' title">') +
+      '<div class="ed__btns">' +
+      (e.depth ? '<button type="button" data-act="up" title="' + (mem ? 'Move up the list' : 'Move left in the row') + '" aria-label="Move up"' + (i ? '' : ' disabled') + '>&uarr;</button>' +
+                 '<button type="button" data-act="down" title="' + (mem ? 'Move down the list' : 'Move right in the row') + '" aria-label="Move down"' + (i < n - 1 ? '' : ' disabled') + '>&darr;</button>' : '') +
+      '<button type="button" data-act="more" title="Photo, contact info and who they report to" aria-label="Photo and contact info" aria-expanded="' + isOpen + '">&hellip;</button>' +
+      (e.depth ? '<button type="button" data-act="del" title="Delete" aria-label="Delete">&times;</button>' : '') +
+      '</div></div>';
+    if (isOpen) {
+      h += '<div class="ld__more">' +
+        (mem ? field('title', 'Title (shown on their card)', 'e.g. Structures', true) : '') +
+        field('photo', 'Photo', 'images/headshots/Name.jpg', true) +
+        field('email', 'Email', 'name@ucsb.edu') +
+        field('phone', 'Phone', '(805) 555-0100') +
+        field('linkedin', 'LinkedIn', 'https://www.linkedin.com/in/...', true) +
+        (e.depth ? '<label class="wide"><span>Reports to</span><select data-move>' + leaderOptions(e) + '</select></label>' : '') +
+        '</div>';
+    }
+    return h;
+  }
+  function blockHTML(p) {
+    var e = byP.get(p);
+    var h = '<div class="ld__p' + (e.kind === 'member' ? ' ld__p--m' : '') + (p === activeP ? ' is-active' : '') + '" data-id="' + e.id + '">' + personHTML(e);
+    if (e.kind === 'leader') {
+      p.members.forEach(function (m) { h += blockHTML(m); });
+      p.leads.forEach(function (l) { h += blockHTML(l); });
+      var who = attr(p.name || 'this person');
+      var addM = '<button type="button" data-act="addm" title="Add a member (name only) under ' + who + '">+ Member</button>';
+      var addL = '<button type="button" data-act="addl" title="Add a ' + (e.depth ? 'sub-lead (a new, smaller row)' : 'lead') + ' under ' + who + '">+ ' + (e.depth ? 'Sub-lead' : 'Lead') + '</button>';
+      h += '<div class="ld__adds">' + (e.depth ? addM + addL : addL + addM) + '</div>';
+    }
+    return h + '</div>';
+  }
+  function renderEditor() {
+    entries = L.walk(data);
+    byP = new Map();
+    entries.forEach(function (e) { byP.set(e.p, e); });
+    box.innerHTML = data.teams.map(function (t, ti) {
+      return '<section class="ld__team" data-team="' + ti + '"><label class="ld__teamname"><span>Team</span><input data-team-name value="' + attr(t.name) + '" aria-label="Team name"></label>' + blockHTML(t.head) + '</section>';
+    }).join('');
+    box.querySelectorAll('[data-f="photo"]').forEach(checkPhoto);
+    refreshOutput();
+  }
+  function refreshOutput() {
+    var leads = 0, members = 0;
+    L.walk(data).forEach(function (e) { if (e.kind === 'member') members++; else if (e.depth) leads++; });
+    count.textContent = data.teams.length + ' teams · ' + leads + ' leads · ' + members + ' members';
+    out.value = L.toHTML(data);
+  }
+  // a photo path that doesn't load is marked red
+  function checkPhoto(inp) {
+    var v = inp.value.trim();
+    inp.classList.remove('is-bad');
+    if (!v) return;
+    var im = new Image();
+    im.onerror = function () { if (inp.value.trim() === v) inp.classList.add('is-bad'); };
+    im.src = v;
+  }
+  var pending;
+  function changed(now) {
+    save(); refreshOutput();
+    clearTimeout(pending);
+    pending = setTimeout(function () {
+      tree.render();
+      var e = activeP && byP.get(activeP); // ids shift when people are added or removed
+      tree.highlight(e ? e.id : null);
+    }, now ? 0 : 150);
+  }
+
+  function blockOf(p) { var e = p && byP.get(p); return e ? box.querySelector('.ld__p[data-id="' + e.id + '"]') : null; }
+  function setActive(p, scroll) {
+    activeP = p;
+    box.querySelectorAll('.ld__p.is-active').forEach(function (x) { x.classList.remove('is-active'); });
+    var el = blockOf(p), e = p && byP.get(p);
+    if (el) {
+      el.classList.add('is-active');
+      if (scroll && !ed.hidden && aside.scrollHeight > aside.clientHeight) {
+        aside.scrollTo({ top: aside.scrollTop + el.getBoundingClientRect().top - aside.getBoundingClientRect().top - 140, behavior: 'smooth' });
+      }
+    }
+    tree.highlight(e ? e.id : null);
+  }
+  function focusIn(p, sel, select) {
+    var el = blockOf(p), f = el && el.querySelector(':scope > ' + sel);
+    if (f && f.disabled) f = f.parentNode.querySelector('button:not(:disabled)');
+    if (f) { f.focus(); if (select && f.select) f.select(); }
+  }
+  function flash(p) {
+    var el = blockOf(p);
+    if (!el) return;
+    el.classList.add('is-moved');
+    setTimeout(function () { el.classList.remove('is-moved'); }, 1400);
+  }
+
+  box.addEventListener('input', function (e) {
+    var t = e.target;
+    if (t.hasAttribute('data-team-name')) { data.teams[+t.closest('[data-team]').getAttribute('data-team')].name = t.value; changed(false); return; }
+    var f = t.getAttribute('data-f'), pe = t.closest('.ld__p'), en = pe && entries[+pe.getAttribute('data-id')];
+    if (!f || !en) return;
+    en.p[f] = t.value;
+    if (f === 'photo') checkPhoto(t);
+    changed(false);
+  });
+  // "Reports to" moves someone (and everyone under them) to another chief or lead
+  box.addEventListener('change', function (e) {
+    var t = e.target;
+    if (!t.hasAttribute('data-move')) return;
+    var en = entries[+t.closest('.ld__p').getAttribute('data-id')], to = entries[+t.value];
+    if (!en || !to || to.p === en.parent) return;
+    en.arr.splice(en.arr.indexOf(en.p), 1);
+    (en.kind === 'member' ? to.p.members : to.p.leads).push(en.p);
+    activeP = en.p;
+    renderEditor(); changed(true);
+    focusIn(en.p, '.ld__more [data-move]');
+    flash(en.p);
+    status.textContent = 'Moved ' + (en.p.name || 'them') + ' under ' + (to.p.name || 'Unnamed') + '.';
+  });
+  box.addEventListener('focusin', function (e) {
+    var pe = e.target.closest('.ld__p'), en = pe && entries[+pe.getAttribute('data-id')];
+    if (en && en.p !== activeP) setActive(en.p, false);
+  });
+
+  ed.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act]');
+    if (!b) return;
+    var act = b.getAttribute('data-act'), pe = b.closest('.ld__p'), en = pe ? entries[+pe.getAttribute('data-id')] : null, focus = null;
+    if (act === 'up' || act === 'down') {
+      var i = en.arr.indexOf(en.p), to = act === 'up' ? i - 1 : i + 1;
+      if (to < 0 || to >= en.arr.length) return;
+      en.arr.splice(i, 1); en.arr.splice(to, 0, en.p);
+      focus = [en.p, '.ld__row [data-act="' + act + '"]'];
+    } else if (act === 'del') {
+      var n = en.kind === 'leader' ? under(en.p) : 0;
+      if (n && !confirm('Delete ' + (en.p.name || 'this lead') + ' and the ' + n + (n === 1 ? ' person' : ' people') + ' under them?')) return;
+      en.arr.splice(en.arr.indexOf(en.p), 1);
+      if (activeP === en.p) activeP = null;
+    } else if (act === 'more') {
+      if (openP.has(en.p)) openP.delete(en.p); else openP.add(en.p);
+      renderEditor();
+      focusIn(en.p, openP.has(en.p) ? '.ld__more input' : '.ld__row [data-act="more"]');
+      return;
+    } else if (act === 'addm') {
+      var m = L.person({ name: 'New member' }, false);
+      en.p.members.push(m); activeP = m;
+      focus = [m, '.ld__row [data-f="name"]', true];
+    } else if (act === 'addl') {
+      var l = L.person({ name: 'New lead', title: en.depth ? 'Sub-lead title' : 'Lead title' }, true);
+      en.p.leads.push(l); activeP = l;
+      focus = [l, '.ld__row [data-f="name"]', true];
+    } else if (act === 'copy') {
+      var html = L.toHTML(data);
+      var done = function () { status.textContent = 'Copied. Paste it over the halo-leadership-data block in halo.html.'; };
+      var fallback = function () { ed.querySelector('.ed__out').open = true; out.select(); document.execCommand('copy'); done(); };
+      if (navigator.clipboard) navigator.clipboard.writeText(html).then(done, fallback); else fallback();
+      return;
+    } else if (act === 'reset') {
+      if (!confirm('Discard your leadership edits and go back to the data in the file?')) return;
+      try { localStorage.removeItem(KEY); } catch (err) {}
+      data = L.read(src); activeP = null; openP.clear();
+      renderEditor(); tree.render(); tree.highlight(null);
+      status.textContent = 'Back to the leadership in the file.';
+      return;
+    } else return;
+    renderEditor();
+    changed(true);
+    if (focus) { focusIn(focus[0], focus[1], focus[2]); setActive(activeP, false); }
+  });
+
+  renderEditor(); tree.render();
+})();
+</script>
+</body></html>
