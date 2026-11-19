@@ -53,16 +53,21 @@ section{padding:clamp(3.5rem,8vw,6.5rem) 0}
 .spec-tree__panel[hidden]{display:none}
 @keyframes spec-tree-in{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.spec-tree__panel{animation:none}}
-.spec-tree__tree{display:grid;grid-template-columns:minmax(0,15rem) minmax(0,1fr);gap:0 3rem;align-items:center}
+.spec-tree__tree{--tree-gap:3rem;display:grid;grid-template-columns:minmax(0,15rem) minmax(0,1fr);gap:0 var(--tree-gap);align-items:center}
 .spec-tree__root{position:relative;padding:1.25rem;background:var(--night);color:#fff}
 .spec-tree__root .k{font-family:var(--display);font-weight:600;font-size:.85rem;color:#b7c3ce}
 .spec-tree__root .v{margin-top:.2rem;font-family:var(--display);font-stretch:112%;font-weight:800;font-size:1.6rem;letter-spacing:-.02em;line-height:1.1}
 .spec-tree__root p{margin:.6rem 0 0;font-size:1rem;line-height:1.4;color:#d7dee5}
-.spec-tree__root::after{content:"";position:absolute;left:100%;top:50%;width:1.5rem;height:2px;background:var(--gold)}
-.spec-tree__branches{list-style:none;margin:0;padding:0 0 0 1.5rem;position:relative;display:grid;gap:.75rem}
-.spec-tree__branches::before{content:"";position:absolute;left:0;top:1.6rem;bottom:1.6rem;width:2px;background:var(--gold)}
+/* connector lines: the root's stub crosses the whole column gap to the trunk; each card draws its own stub (level with the
+   centre of its number) plus the piece of trunk down to the next card's stub, so the trunk ends exactly at the last branch
+   whatever the cards' heights. --arm is the stub length, --stub its distance from the card's top. */
+.spec-tree__root::after{content:"";position:absolute;left:100%;top:calc(50% - 1px);width:calc(var(--tree-gap) + 2px);height:2px;background:var(--gold)}
+.spec-tree__branches{--arm:1.5rem;--stub:calc(1rem + .875rem - 1px);list-style:none;margin:0;padding:0 0 0 var(--arm);position:relative;display:grid;gap:.75rem}
 .spec-tree__branches li{position:relative;display:flex;gap:.9rem;align-items:flex-start;padding:1rem 1.1rem;background:var(--fog);border-left:3px solid var(--gold)}
-.spec-tree__branches li::before{content:"";position:absolute;right:100%;top:1.6rem;width:1.5rem;height:2px;background:var(--gold)}
+.spec-tree__branches li::before{content:"";position:absolute;right:100%;top:var(--stub);width:calc(var(--arm) + 3px);height:2px;background:var(--gold)}
+.spec-tree__branches li:not(:last-child)::after{content:"";position:absolute;left:calc(-1 * var(--arm) - 3px);top:var(--stub);width:2px;height:calc(100% + .75rem + 2px);background:var(--gold)}
+/* a lone card is as tall as the list, so its middle is where the root's stub arrives: join the two */
+.spec-tree__branches li:only-child::after{content:"";position:absolute;left:calc(-1 * var(--arm) - 3px);top:min(var(--stub), calc(50% - 1px));width:2px;height:calc(max(var(--stub), calc(50% - 1px)) - min(var(--stub), calc(50% - 1px)) + 2px);background:var(--gold)}
 .spec-tree__branches h3{margin:0 0 .15rem;font-size:1.05rem;font-weight:700;font-stretch:100%;letter-spacing:-.01em;line-height:1.3}
 .spec-tree__branches p{margin:0;font-size:1.02rem;line-height:1.5}
 .spec-num{display:inline-grid;place-items:center;width:1.75rem;height:1.75rem;background:var(--gold);color:var(--night);font-family:var(--display);font-weight:800;font-size:.8rem;flex:none}
@@ -78,10 +83,11 @@ section{padding:clamp(3.5rem,8vw,6.5rem) 0}
   .spec-tree__tree{grid-template-columns:minmax(0,1fr);gap:0}
   .spec-tree__panel{padding:1.25rem 1rem}
   .spec-tree__root::after{left:1rem;top:100%;width:2px;height:1.25rem}
-  .spec-tree__branches{margin-top:1.25rem;margin-left:1rem;padding-left:.9rem}
-  .spec-tree__branches::before{top:-1.25rem}
+  .spec-tree__branches{--arm:.9rem;--stub:calc(.9rem + .875rem - 1px);margin-top:1.25rem;margin-left:1rem}
+  /* the root sits above here: carry its stub down to the first card */
+  .spec-tree__branches::before{content:"";position:absolute;left:0;top:-1.25rem;width:2px;height:calc(1.25rem + var(--stub) + 2px);background:var(--gold)}
+  .spec-tree__branches li:only-child::after{content:none}
   .spec-tree__branches li{flex-direction:column;gap:.5rem;padding:.9rem}
-  .spec-tree__branches li::before{width:.9rem}
 }
 @media(max-width:560px){.spec-tree{grid-template-columns:minmax(0,1fr)}}
 /* Photos */
@@ -365,7 +371,7 @@ footer li a:hover{color:var(--ink);text-decoration:underline;text-decoration-col
 .tlA__item.is-dim .tlA__card:hover{opacity:.7}
 .tlA__links path.is-dim{opacity:.12}
 @media (prefers-reduced-motion:reduce){.tlA__sub,.tlA__sub.is-shown{transition:opacity .2s}.tlA__links path.is-spawn{animation:none}}
-/* toolbar: legend (each type shows or hides), show-all toggle and spacing slider; sticks to the top of the screen */
+/* toolbar: legend (each type shows or hides) and show-all toggle; sticks to the top of the screen */
 .tlA__tools{position:sticky;top:0;z-index:6;display:flex;flex-wrap:wrap;align-items:center;gap:.6rem 1.75rem;margin:-.5rem 0 1.25rem;padding:.65rem 0;background:var(--paper);border-bottom:1px solid var(--line);font-family:var(--display);font-size:.9rem}
 .tlA__tools .htl-legend{flex:1 0 100%;margin:0;gap:.45rem .5rem}
 .tlA__tools .htl-legend__key{margin-left:.7rem;color:var(--muted)}
@@ -388,16 +394,10 @@ footer li a:hover{color:var(--ink);text-decoration:underline;text-decoration-col
   .tlA__tools .htl-legend__key{margin-left:.3rem;font-size:.75rem}
   .tlA__tools .htl-legend__key .htl-now{transform:scale(.75)}
   .tlA__expand{padding:.3rem .6rem}
-  .tlA__spacing{gap:.4rem}.tlA__spacing input{width:min(140px,30vw)}.tlA__spacing output{display:none}
 }
 .tlA__expand{appearance:none;font:inherit;font-weight:700;padding:.45rem .85rem;background:#fff;border:1.5px solid var(--ink);color:var(--ink);cursor:pointer}
 .tlA__expand[aria-pressed="true"]{background:var(--ink);color:#fff}
 .tlA__expand:hover{background:var(--gold);border-color:var(--gold);color:var(--night)}
-.tlA__spacing{display:inline-flex;align-items:center;gap:.6rem;font-weight:700}
-.tlA__spacing input{width:min(200px,40vw);accent-color:var(--ink);cursor:pointer}
-.tlA__spacing output{min-width:8.5em;font-weight:500;font-size:.85rem;color:var(--muted)}
-.tlA__zoomhint{font-weight:500;font-size:.85rem;color:var(--muted)}
-@media (pointer:coarse){.tlA__zoomhint{display:none}}
 .tlA.show-all .tlA__body[hidden]{display:block}
 .tlA.show-all .tlA__item:not(.is-open) .tlA__subs,.tlA.show-all .tlA__item:not(.is-open) .tlA__body--nodesc{display:none}
 .tlA.is-sliding .tlA__card,.tlA.is-sliding .tlA__dot,.tlA.is-sliding .tlA__tick,.tlA.is-sliding .tlA__year,.tlA.is-sliding .tlA__today,.tlA.is-sliding .tlA__progress,.tlA.is-sliding .tlA__span{transition:none}

@@ -22,11 +22,10 @@
     return m ? { date: new Date(+m[1], +m[2] - 1, m[3] ? +m[3] : 15, 12), hasDay: !!m[3] } : null;
   }
   function byT(a, b) { return a.t - b.t; }
-  var DEFAULT_SPACING = 0.6; // pixels per day on page open: the slider's minimum (crowded stretches still widen to fit)
+  var DEFAULT_SPACING = 0.6; // pixels per day on page open: the tightest spacing (crowded stretches still widen to fit)
   function clampSpacing(v) { v = parseFloat(v); return isFinite(v) ? Math.min(6, Math.max(0.6, Math.round(v * 10) / 10)) : DEFAULT_SPACING; }
-  // the same, without rounding to the slider's 0.1 steps (so a trackpad pinch can change it smoothly)
+  // the same, without rounding to 0.1 steps (so a trackpad pinch can change it smoothly)
   function clampSpacingFine(v) { return Math.min(6, Math.max(0.6, v)); }
-  var MAC = /Mac|iP(hone|ad|od)/.test(navigator.platform || navigator.userAgent);
 
   /* ---------------- Data: entries with optional steps ---------------- */
   var nextId = 0;
@@ -106,9 +105,7 @@
     var zoomBase = +(root.getAttribute('data-zoom-base') || opts.zoomBase || 0), zoom = 1;
     // the legend sits in the toolbar, which sticks to the top of the screen
     root.innerHTML = '<div class="tlA__tools" data-keep-open>' + toggleLegend(shown) +
-      '<button type="button" class="tlA__expand" aria-pressed="false">Show all descriptions</button>' +
-      '<label class="tlA__spacing">Spacing <input type="range" min="0.6" max="6" step="0.1"> <output></output></label>' +
-      '<span class="tlA__zoomhint">or ' + (MAC ? '\u2318' : 'Ctrl') + ' + scroll' + (MAC ? ' / pinch' : '') + ' over the timeline</span></div>' +
+      '<button type="button" class="tlA__expand" aria-pressed="false">Show all descriptions</button></div>' +
       '<div class="tlA__stage"><div class="tlA__axis"></div><div class="tlA__progress"></div><div class="tlA__span" aria-hidden="true"></div><div class="tlA__ticks" aria-hidden="true"></div>' +
       '<svg class="tlA__links" aria-hidden="true"></svg>' +
       '<div class="tlA__today" aria-hidden="true"><span class="tlA__todayLine"></span><span class="htl-now"></span><span class="tlA__todayLabel"><b>Today</b><span></span><span></span></span></div>' +
@@ -117,10 +114,7 @@
         ticks = root.querySelector('.tlA__ticks'), today = root.querySelector('.tlA__today'), todayTxt = today.querySelectorAll('.tlA__todayLabel span'),
         progress = root.querySelector('.tlA__progress'), spanEl = root.querySelector('.tlA__span');
     var uid = 'tlA' + Math.random().toString(36).slice(2, 7);
-    var expandBtn = root.querySelector('.tlA__expand'), slider = root.querySelector('.tlA__spacing input'), sliderOut = root.querySelector('.tlA__spacing output');
-    // the readout is in screen pixels, so it includes the zoom on wide screens
-    function showSpacing() { slider.value = spacing; sliderOut.textContent = '1 month \u2248 ' + Math.round(spacing * 30.44 * (zoom || 1)) + ' px'; }
-    showSpacing();
+    var expandBtn = root.querySelector('.tlA__expand');
     // show or hide every card's description at once (steps still open by clicking a card)
     expandBtn.addEventListener('click', function () {
       showAll = !showAll;
@@ -129,18 +123,9 @@
       expandBtn.textContent = showAll ? 'Hide descriptions' : 'Show all descriptions';
       layout(false);
     });
-    // spacing between dates; cards follow the slider without lag while it moves
-    var slideEnd;
-    slider.addEventListener('input', function () {
-      spacing = clampSpacing(slider.value); showSpacing();
-      root.classList.add('is-sliding'); clearTimeout(slideEnd);
-      slideEnd = setTimeout(function () { root.classList.remove('is-sliding'); }, 200);
-      layout(false);
-      if (opts.onSpacing) opts.onSpacing(spacing);
-    });
-    // Cmd/Ctrl + scroll (or a trackpad pinch) over the timeline changes the spacing too, like zooming the diagrams;
-    // the date under the pointer stays under the pointer. Plain scrolling still scrolls the page.
-    var curMap = null;
+    // Cmd/Ctrl + scroll (or a trackpad pinch) over the timeline changes the spacing between dates, like zooming the diagrams;
+    // the date under the pointer stays under the pointer and cards follow without lag. Plain scrolling still scrolls the page.
+    var curMap = null, slideEnd;
     root.addEventListener('wheel', function (e) {
       if (!(e.ctrlKey || e.metaKey) || !curMap) return;
       e.preventDefault();
@@ -148,7 +133,7 @@
       var next = clampSpacingFine(spacing * Math.exp(-Math.max(-60, Math.min(60, dy)) * 0.008));
       if (next === spacing) return;
       var py = (e.clientY - stage.getBoundingClientRect().top) / zoom, t = curMap.timeAt(py);
-      spacing = next; showSpacing();
+      spacing = next;
       root.classList.add('is-sliding'); clearTimeout(slideEnd);
       slideEnd = setTimeout(function () { root.classList.remove('is-sliding'); }, 200);
       layout(false);
@@ -276,7 +261,6 @@
         var avail = root.clientWidth;
         zoom = avail > zoomBase ? avail / zoomBase : 1;
         stage.style.zoom = zoom === 1 ? '' : String(zoom);
-        showSpacing();
       }
       var W = zoom !== 1 ? root.clientWidth / zoom : stage.clientWidth, narrow = W < 720;
       var axisX = narrow ? 62 : W / 2, gap = narrow ? 34 : 64, ppd = spacing, pad = 40;
@@ -407,7 +391,7 @@
     }
     renderers.push(function () { layout(false); });
     build();
-    return { rebuild: build, openById: openById, setSpacing: function (v) { spacing = clampSpacing(v); showSpacing(); layout(false); } };
+    return { rebuild: build, openById: openById, setSpacing: function (v) { spacing = clampSpacing(v); layout(false); } };
   }
 
   /* keep "today" moving: re-place it every minute and whenever the tab comes back */

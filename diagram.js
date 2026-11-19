@@ -1,5 +1,5 @@
 /*
-  Pan-and-zoom diagrams (halo.html, "Propulsion & actuators").
+  Pan-and-zoom diagrams (halo.html, "Propulsion Architecture").
   Markup: <section data-diagram="images/x.svg"> for a single drawing, or <section data-diagram> with
     one button per drawing:  data-src="images/x.svg" (and data-label for screen readers); aria-pressed="true" on the first shown,
     .fw__canvas > .fw__stage   where the drawing goes,
