@@ -31,6 +31,35 @@
   <a class="page-hero__scroll" href="#about" aria-label="Scroll to content"><span></span></a>
 </header>
 
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; }
+
+  .page-hero {
+    position: relative;
+    width: 100%;
+    min-height: 100svh;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .page-hero__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: -1;
+  }
+
+  .nav,
+  .page-hero__content,
+  .page-hero__scroll {
+    position: relative;
+    z-index: 1;
+  }
+</style>
 
   
   
