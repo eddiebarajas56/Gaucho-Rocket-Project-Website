@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="images/favicon-192.png">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
 <title>Halo Timeline by Discipline</title>
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -276,8 +280,7 @@ Inspired by Gruyere's VTVL, optimists took to the challenge</p></li>
         '<span class="tlC__pick" role="group" aria-label="Branch">' + LANES.map(function (k) {
           return '<button type="button" class="tm-' + k + '" data-lane="' + k + '" aria-pressed="false"><span class="dsc-sw"></span>' + TEAMS[k].label + '</button>';
         }).join('') + '</span>' +
-        '<button type="button" class="tlA__expand" aria-pressed="false">Show all descriptions</button>' +
-        '<label class="tlA__spacing">Spacing <input type="range" min="0.6" max="6" step="0.1"> <output></output></label></div>' +
+        '<button type="button" class="tlA__expand" aria-pressed="false">Show all descriptions</button></div>' +
       '<div class="tlC__heads" aria-hidden="true">' + LANES.map(function (k) {
         return '<span class="tlC__head tm-' + k + '"><span class="dsc-sw"></span>' + TEAMS[k].long + '</span>';
       }).join('') + '</div>' +
@@ -289,23 +292,14 @@ Inspired by Gruyere's VTVL, optimists took to the challenge</p></li>
     var stage = $('.tlA__stage'), list = $('.tlA__list'), svg = $('.tlA__links'), ticks = $('.tlA__ticks'), today = $('.tlA__today'),
         todayTxt = today.querySelectorAll('.tlA__todayLabel span'), progress = $('.tlA__progress'), spanEl = $('.tlA__span'),
         laneBox = $('.tlC__lanes'), heads = root.querySelectorAll('.tlC__head'), pickBtns = root.querySelectorAll('.tlC__pick button'),
-        expandBtn = $('.tlA__expand'), slider = $('.tlA__spacing input'), sliderOut = $('.tlA__spacing output');
+        expandBtn = $('.tlA__expand');
     stickHeads(root);
 
-    function showSpacing() { slider.value = spacing; sliderOut.textContent = '1 month ≈ ' + Math.round(spacing * 30.44) + ' px'; }
-    showSpacing();
     expandBtn.addEventListener('click', function () {
       showAll = !showAll;
       root.classList.toggle('show-all', showAll);
       expandBtn.setAttribute('aria-pressed', showAll);
       expandBtn.textContent = showAll ? 'Hide descriptions' : 'Show all descriptions';
-      layout(false);
-    });
-    var slideEnd;
-    slider.addEventListener('input', function () {
-      spacing = U.clampSpacing(slider.value); showSpacing();
-      root.classList.add('is-sliding'); clearTimeout(slideEnd);
-      slideEnd = setTimeout(function () { root.classList.remove('is-sliding'); }, 200);
       layout(false);
     });
     pickBtns.forEach(function (bt) { bt.addEventListener('click', function () { pick = bt.getAttribute('data-lane'); openId = null; build(); }); });
