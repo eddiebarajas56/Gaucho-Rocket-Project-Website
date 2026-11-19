@@ -48,44 +48,46 @@
     --rule: #d3d6db;
     --gap: 12px;
     --radius: 20px;
+    --h: calc(100svh - 2 * var(--gap));   /* one-page height */
   }
 
   * { box-sizing: border-box; }
-  body { margin: 0; background: #fff; color: var(--ink); }
 
-  /* ---------- Layout ---------- */
   .sonus {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 0.62fr);
+    grid-template-columns: minmax(0, 1fr) auto;   /* video width comes from its height */
     gap: var(--gap);
     max-width: 1400px;
     margin: 0 auto;
     padding: var(--gap);
   }
 
-  /* Left column: two stacked cells, each half the height of the video cell */
   .left {
     display: grid;
     grid-template-rows: 1fr 1fr;
     gap: var(--gap);
     min-height: 0;
+    min-width: 0;
   }
 
   .cell {
     border-radius: var(--radius);
-    padding: clamp(24px, 3.5vw, 56px);
+    padding: clamp(20px, 3vh, 48px) clamp(20px, 3vw, 48px);
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
   .about { background: var(--panel-a); }
   .specs { background: var(--panel-b); }
 
-  /* Right cell: vertical video sets the height of the whole grid */
   .video-cell {
     position: relative;
+    height: var(--h);
+    aspect-ratio: 9 / 16;
     border-radius: var(--radius);
     overflow: hidden;
     background: #000;
-    aspect-ratio: 9 / 16;
   }
   .video-cell video {
     position: absolute;
@@ -96,38 +98,36 @@
     display: block;
   }
 
-  /* ---------- Type ---------- */
   h2 {
     margin: 0;
     font-family: "Archivo", system-ui, sans-serif;
     font-stretch: 125%;
     font-weight: 800;
-    font-size: clamp(2rem, 4.2vw, 4.2rem);
+    font-size: clamp(1.8rem, min(4vw, 7vh), 4rem);
     line-height: 1;
     letter-spacing: -0.02em;
   }
   .about p {
-    margin: clamp(16px, 2vw, 28px) 0 0;
+    margin: clamp(12px, 2vh, 24px) 0 0;
     font-family: "Spectral", Georgia, serif;
-    font-size: clamp(1rem, 1.5vw, 1.45rem);
-    line-height: 1.65;
+    font-size: clamp(1rem, min(1.4vw, 2.6vh), 1.4rem);
+    line-height: 1.6;
     max-width: 38em;
   }
 
-  /* ---------- Specs ---------- */
   .specs dl {
-    margin: clamp(16px, 2vw, 32px) 0 0;
+    margin: clamp(12px, 2vh, 28px) 0 0;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     border-top: 1px solid var(--rule);
   }
   .specs .row {
-    padding: clamp(10px, 1.2vw, 18px) 0;
+    padding: clamp(8px, 1.4vh, 16px) 0;
     border-bottom: 1px solid var(--rule);
   }
   .specs dt {
     font-family: "Archivo", system-ui, sans-serif;
-    font-size: clamp(0.8rem, 1vw, 1rem);
+    font-size: clamp(0.8rem, 1.8vh, 1rem);
     font-weight: 500;
     color: var(--muted);
   }
@@ -136,24 +136,21 @@
     font-family: "Archivo", system-ui, sans-serif;
     font-stretch: 125%;
     font-weight: 800;
-    font-size: clamp(1.1rem, 1.9vw, 1.9rem);
+    font-size: clamp(1.05rem, min(1.8vw, 3.4vh), 1.8rem);
     line-height: 1.2;
   }
 
-  /* ---------- Mobile ---------- */
+  /* Mobile: stack, let content set the height */
   @media (max-width: 860px) {
     .sonus { grid-template-columns: 1fr; }
     .left { grid-template-rows: auto auto; }
-    .-cell { width: min(100%, 440px); margin: 0 auto; }
+    .video-cell { height: auto; width: min(100%, 440px); margin: 0 auto; }
   }
 
   video:focus-visible { outline: 3px solid var(--ink); outline-offset: -3px; }
 </style>
-</head>
-<body>
 
 <section class="sonus" aria-labelledby="about-title">
-
   <div class="left">
     <div class="cell about">
       <h2 id="about-title">About Sonus</h2>
@@ -171,20 +168,13 @@
     </div>
   </div>
 
-  <!-- Video is embedded and plays on the page (no external link).
-       Put your file next to this HTML and update the src. -->
   <div class="video-cell">
-    <video
-      controls
-      playsinline
-      preload="metadata"
-      poster="sonus-poster.jpg"
-      aria-label="Sonus launch video">
-      <source src="images/sonus-launch.mov" type="video/mov">
+    <video controls playsinline preload="metadata" poster="sonus-poster.jpg" aria-label="Sonus launch video">
+      <source src="images/sonus-launch.mp4" type="video/mp4">
+      <source src="images/sonus-launch.mov" type="video/quicktime">
       Your browser doesn't support embedded video.
     </video>
   </div>
-
 </section>
 
 </body>
