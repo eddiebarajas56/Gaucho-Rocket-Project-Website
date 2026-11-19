@@ -26,6 +26,177 @@
 
   <a class="page-hero__scroll" href="#about" aria-label="Scroll to content"><span></span></a>
 </header>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About Sonus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,800&family=Spectral:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #182029;
+    --muted: #5d6877;
+    --panel-a: #f8f6f2;
+    --panel-b: #f0f1f3;
+    --rule: #d3d6db;
+    --gap: 12px;
+    --radius: 20px;
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #fff; color: var(--ink); }
+
+  /* ---------- Layout ---------- */
+  .sonus {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.62fr);
+    gap: var(--gap);
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--gap);
+  }
+
+  /* Left column: two stacked cells, each half the height of the video cell */
+  .left {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: var(--gap);
+    min-height: 0;
+  }
+
+  .cell {
+    border-radius: var(--radius);
+    padding: clamp(24px, 3.5vw, 56px);
+    overflow: hidden;
+  }
+  .about { background: var(--panel-a); }
+  .specs { background: var(--panel-b); }
+
+  /* Right cell: vertical video sets the height of the whole grid */
+  .video-cell {
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: #000;
+    aspect-ratio: 9 / 16;
+  }
+  .video-cell video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* ---------- Type ---------- */
+  h2 {
+    margin: 0;
+    font-family: "Archivo", system-ui, sans-serif;
+    font-stretch: 125%;
+    font-weight: 800;
+    font-size: clamp(2rem, 4.2vw, 4.2rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .about p {
+    margin: clamp(16px, 2vw, 28px) 0 0;
+    font-family: "Spectral", Georgia, serif;
+    font-size: clamp(1rem, 1.5vw, 1.45rem);
+    line-height: 1.65;
+    max-width: 38em;
+  }
+
+  /* ---------- Specs ---------- */
+  .specs dl {
+    margin: clamp(16px, 2vw, 32px) 0 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-top: 1px solid var(--rule);
+  }
+  .specs .row {
+    padding: clamp(10px, 1.2vw, 18px) 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .specs dt {
+    font-family: "Archivo", system-ui, sans-serif;
+    font-size: clamp(0.8rem, 1vw, 1rem);
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .specs dd {
+    margin: 4px 0 0;
+    font-family: "Archivo", system-ui, sans-serif;
+    font-stretch: 125%;
+    font-weight: 800;
+    font-size: clamp(1.1rem, 1.9vw, 1.9rem);
+    line-height: 1.2;
+  }
+
+  /* ---------- Mobile ---------- */
+  @media (max-width: 860px) {
+    .sonus { grid-template-columns: 1fr; }
+    .left { grid-template-rows: auto auto; }
+    .video-cell { width: min(100%, 440px); margin: 0 auto; }
+  }
+
+  video:focus-visible { outline: 3px solid var(--ink); outline-offset: -3px; }
+</style>
+</head>
+<body>
+
+<section class="sonus" aria-labelledby="about-title">
+
+  <div class="left">
+    <div class="cell about">
+      <h2 id="about-title">About Sonus</h2>
+      <p>Sonus was UC Santa Barbara's and Gaucho Rocket Project's first ever solid rocket launch. The rocket took just over a few months to build and first launched on October 3rd, 2026.</p>
+    </div>
+
+    <div class="cell specs">
+      <h2>Specifications</h2>
+      <dl>
+        <div class="row"><dt>Type</dt><dd>Solid</dd></div>
+        <div class="row"><dt>Motor</dt><dd>AeroTech M1419W</dd></div>
+        <div class="row"><dt>Apogee</dt><dd>8,256 feet</dd></div>
+        <div class="row"><dt>Next Launch</dt><dd>Winter 2027</dd></div>
+      </dl>
+    </div>
+  </div>
+
+  <!-- Video is embedded and plays on the page (no external link).
+       Put your file next to this HTML and update the src. -->
+  <div class="video-cell">
+    <video
+      controls
+      playsinline
+      preload="metadata"
+      poster="sonus-poster.jpg"
+      aria-label="Sonus launch video">
+      <source src="sonus-launch.mp4" type="video/mp4">
+      Your browser doesn't support embedded video.
+    </video>
+  </div>
+
+</section>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
 <main><section><div class="wrap split"><h2 class="section-title">About Sonus</h2>
 <div class="text"><p>Sonus was UC Santa Barbara's and Gaucho Rocket Projects First Ever Solid Rocket Launch. The rocket took just over a few months to build and first launched on October 3rd, 2026.</p></div></div></section>
 <section class="alt"><div class="wrap"><h2 class="section-title">Specifications</h2><dl class="specs"><div><dt>Type</dt><dd>Solid</dd></div><div><dt>Motor</dt><dd>AeroTech M1419W</dd></div><div><dt>Apogee</dt><dd>8,256 feet</dd></div><div><dt>Next Launch</dt><dd>Winter 2027</dd></div></dl></div></section>
